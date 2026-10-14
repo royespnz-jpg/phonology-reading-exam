@@ -69,7 +69,6 @@ function renderStart(error = '') {
     <form class="card start-form" data-start novalidate>
       <h2>Your details</h2>
       <label>Full name<input name="student" required maxlength="80" autocomplete="name" value="${esc(saved.student || '')}"></label>
-      <label>Group<input name="group" maxlength="40" value="${esc(saved.group || params.get('g') || '')}" placeholder="e.g. 10-1"></label>
       <p class="form-error" data-error role="alert">${esc(error)}</p>
       <button class="btn primary big" type="submit">Continue</button>
       <p class="muted small">${scriptUrl() ? 'Your recordings go to your teacher’s Google Drive.' : 'This exam is not connected to your teacher’s sheet yet.'}
@@ -87,7 +86,9 @@ function submitStart(form) {
   }
   S = {
     student: data.student.trim(),
-    group: String(data.group || '').trim(),
+    // Students only write their name. A teacher's link with ?g=<group> still
+    // files the recordings by group.
+    group: String(params.get('g') || '').trim().slice(0, 40),
     attempt: newId(),
     steps: buildTimeline({ scale: SCALE }),
     stepIndex: 0,
@@ -441,7 +442,7 @@ function renderTeacher(message = '') {
     </form>
     <section class="card">
       <h2>2 · The link for your students</h2>
-      <p>It carries your script, so the recordings go to your sheet. Students write their name and group and start.</p>
+      <p>It carries your script, so the recordings go to your sheet. Students write their full name and start.</p>
       <div class="link-row"><code>${esc(link())}</code><button class="btn small" data-copy="${esc(link())}">Copy</button></div>
     </section>
     <section class="card">
