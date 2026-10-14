@@ -1,9 +1,9 @@
-import { READINGS, RESPONSES, INTRO, buildTimeline, timedSeconds, directions, ruleOf, PREP, RESPONSE } from './format.js?v=202610141749';
-import { clockHtml, runClock, idleClock, fmt } from './clock.js?v=202610141749';
-import { unlockAudio, beep, speak, stopSpeaking, openMicrophone, closeMicrophone, levelMeter, startRecording } from './audio.js?v=202610141749';
-import { scriptUrl, saveScriptUrl, isScriptUrl, ping, report, enqueue, onUpload, pendingUploads, resumeUploads } from './api.js?v=202610141749';
-import { saveRecording, allRecordings } from './store.js?v=202610141749';
-import { TEACHER_CODE, SCRIPT_VERSION } from './config.js?v=202610141749';
+import { READINGS, RESPONSES, INTRO, buildTimeline, timedSeconds, directions, ruleOf, PREP, RESPONSE } from './format.js?v=202610141811';
+import { clockHtml, runClock, idleClock, fmt } from './clock.js?v=202610141811';
+import { unlockAudio, beep, speak, stopSpeaking, openMicrophone, closeMicrophone, levelMeter, startRecording } from './audio.js?v=202610141811';
+import { scriptUrl, saveScriptUrl, isScriptUrl, ping, report, enqueue, onUpload, pendingUploads, resumeUploads } from './api.js?v=202610141811';
+import { saveRecording, allRecordings } from './store.js?v=202610141811';
+import { TEACHER_CODE, SCRIPT_VERSION } from './config.js?v=202610141811';
 
 const app = document.getElementById('app');
 const params = new URLSearchParams(location.search);
