@@ -33,7 +33,7 @@ test('the quick demo shortens every clock but keeps at least 3 seconds', () => {
 test('each reading is a list of separate sentences with the targets in bold', () => {
   const all = new Set();
   for (const r of READINGS) {
-    assert.ok(r.sentences.length >= 10 && r.sentences.length <= 13, `${r.id}: ${r.sentences.length} sentences`);
+    assert.equal(r.sentences.length, 15, `${r.id}: ${r.sentences.length} sentences`);
     for (const s of r.sentences) {
       assert.equal(s.text.split('**').length % 2, 1, `unbalanced ** in: ${s.text}`);
       assert.match(plain(s.text), /^[A-Z].*[.?!]$/, `one whole sentence: ${s.text}`);
@@ -47,14 +47,15 @@ test('each reading is a list of separate sentences with the targets in bold', ()
 });
 
 test('each reading fits its minute', () => {
-  // A careful learner reads about 3 syllables a second and pauses briefly
-  // between sentences: every reading should take most of the minute, not more.
+  // A learner reading steadily says about 3.5 syllables a second and pauses
+  // briefly between sentences: every reading should take most of the minute,
+  // not more.
   for (const r of READINGS) {
     const syl = r.sentences.reduce((n, s) => n + syllablesOf(plain(s.text)), 0);
-    const seconds = syl / 3 + 0.4 * (r.sentences.length - 1);
-    assert.ok(syl >= 135 && syl <= 165, `${r.id}: ${syl} syllables`);
-    assert.ok(seconds >= 48 && seconds <= 60, `${r.id}: about ${Math.round(seconds)} s`);
-    assert.ok(words(r).length >= 75 && words(r).length <= 130, `${r.id}: ${words(r).length} words`);
+    const seconds = syl / 3.5 + 0.4 * (r.sentences.length - 1);
+    assert.ok(syl >= 160 && syl <= 190, `${r.id}: ${syl} syllables`);
+    assert.ok(seconds >= 50 && seconds <= 60, `${r.id}: about ${Math.round(seconds)} s`);
+    assert.ok(words(r).length >= 90 && words(r).length <= 150, `${r.id}: ${words(r).length} words`);
   }
 });
 

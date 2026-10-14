@@ -224,9 +224,10 @@ function examShell() {
   app.innerHTML = `<div class="stage">
     <header class="stage-top">
       <div class="brand"><span class="dot"></span>Phonology Reading Exam</div>
-      <ol class="progress" aria-label="Readings">
-        ${RESPONSES.map((r) => `<li data-q="${r.id}"><span>${esc(r.short)}</span></li>`).join('')}
-      </ol>
+      <div class="progress">
+        <span class="progress-label" data-progress-label>Reading 1 of ${RESPONSES.length}</span>
+        <span class="progress-bars" aria-hidden="true">${RESPONSES.map((r) => `<i data-q="${r.id}"></i>`).join('')}</span>
+      </div>
       <div class="who">${who()}</div>
     </header>
     <main class="stage-main">
@@ -291,7 +292,10 @@ async function runExam() {
     };
     // The sentences appear when the preparation clock starts, after "Begin preparing now".
     if (step.type !== 'prep') show(taskHtml(step));
-    app.querySelectorAll('.progress li').forEach((li) => li.classList.toggle('now', li.dataset.q === step.reading));
+    // Where the student is: a status, not something to click (the exam goes on by itself).
+    app.querySelectorAll('.progress [data-q]').forEach((bar) => bar.classList.toggle('now', bar.dataset.q === step.reading));
+    const r = READINGS.find((x) => x.id === step.reading);
+    if (r) app.querySelector('[data-progress-label]').textContent = `Reading ${r.n} of ${READINGS.length}`;
 
     if (step.type === 'intro' || step.type === 'part') {
       idleClock(clock, { phase: 'Listen', time: '··', sub: 'Directions' });
