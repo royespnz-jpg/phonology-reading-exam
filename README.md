@@ -52,7 +52,7 @@ Las consignas se oyen (voz del navegador) y se leen en pantalla. Son unos 8 minu
    *Readings*, y la carpeta *Phonology Reading Exam — Recordings* en tu Drive.
 2. **Implementar → Nueva implementación → Aplicación web** · Ejecutar como: **Yo** · Quién tiene acceso: **Cualquier
    persona** → copiá la URL que termina en `/exec`.
-3. **En el examen**, abrí la página **Teacher** (`…/#teacher`): pegá la URL, *Test*, *Save*. Ahí está el link para los
+3. **En el examen**, abrí la página **Teacher** (`…/#teacher`) con el código del docente, **1234**: pegá la URL, *Test*, *Save*. Ahí está el link para los
    estudiantes y un link para probar el examen. La página ya trae tu URL de fábrica ([`js/config.js`](js/config.js)): si
    cambiás de planilla, cambiala ahí o usá el link de la página Teacher.
 
@@ -68,6 +68,21 @@ Las consignas se oyen (voz del navegador) y se leen en pantalla. Son unos 8 minu
 Los alumnos solo escriben su **nombre completo**. Los audios quedan en *Phonology Reading Exam — Recordings / No group /
 nombre · intento*. Si querés separarlos por curso, agregá `?g=` al link (por ejemplo `…/phonology-reading-exam/?g=10-1`):
 ese grupo va a la columna *Group* y a su propia carpeta, sin que el alumno lo escriba.
+
+## Vista previa del docente (código 1234)
+
+El link **Teacher** de la página de inicio pide el código **1234** (se cambia en [`js/config.js`](js/config.js),
+`TEACHER_CODE`). Con el código entrás a:
+
+- **La página Teacher**: el script, el link para los alumnos, las oraciones con lo que evalúa cada una y la prueba con
+  relojes reales.
+- **La vista previa** (`…/#preview`): todos los pasos del examen tal como los ven los alumnos —la introducción y, en cada
+  lectura, *Directions*, *Prepare* y *Read*— en el orden que quieras: botones de cada paso, *Previous* / *Next* o las
+  flechas ← →. Podés escuchar lo que dice la voz, probar el reloj de 60 segundos y mostrar qué evalúa cada oración. No
+  graba ni manda nada a la planilla.
+
+El código queda abierto solo en esa pestaña; **Lock and leave** lo cierra. Sin el código, los alumnos no ven las
+oraciones antes de tiempo (no es una contraseña: alguien que lea el código de la página podría encontrarlo).
 
 ## Cambiar las oraciones
 
