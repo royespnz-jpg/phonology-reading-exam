@@ -1,0 +1,11 @@
+name: Check script (temporary)
+on: push
+permissions:
+  contents: read
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -sSL "https://script.google.com/macros/s/AKfycbzi6kHiUefhgLz_Lqqt3CUBPhlALS66Iq7yOIZVu0a6XTuY1tvSxJbjLQwzSVQatgXh/exec" -o out.txt -w "HTTP %{http_code} %{content_type}\n"
+          head -c 400 out.txt; echo
