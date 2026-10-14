@@ -7,7 +7,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { READINGS, caps, targets } from '../js/format.js';
+import { READINGS, caps, targets, ruleOf } from '../js/format.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'google-apps-script', 'Code.gs');
@@ -15,7 +15,7 @@ const SRC = join(ROOT, 'google-apps-script', 'Code.gs');
 // One row per sentence: reading, sentence number, the text with the targets
 // in CAPITALS, the target words, and what the sentence tests.
 export function readingRows() {
-  return READINGS.flatMap((r) => r.sentences.map((s, i) => [r.n, i + 1, caps(s.text), targets(s.text).join(', '), s.rule]));
+  return READINGS.flatMap((r) => r.sentences.map((s, i) => [r.n, i + 1, caps(s.text), targets(s.text).join(', '), ruleOf(s)]));
 }
 
 export function rowsBlock() {

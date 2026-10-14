@@ -1,9 +1,9 @@
-import { READINGS, RESPONSES, INTRO, buildTimeline, timedSeconds, directions, PREP, RESPONSE } from './format.js?v=202610140515';
-import { clockHtml, runClock, idleClock, fmt } from './clock.js?v=202610140515';
-import { unlockAudio, beep, speak, stopSpeaking, openMicrophone, closeMicrophone, levelMeter, startRecording } from './audio.js?v=202610140515';
-import { scriptUrl, saveScriptUrl, isScriptUrl, ping, report, enqueue, onUpload, pendingUploads, resumeUploads } from './api.js?v=202610140515';
-import { saveRecording, allRecordings } from './store.js?v=202610140515';
-import { TEACHER_CODE } from './config.js?v=202610140515';
+import { READINGS, RESPONSES, INTRO, buildTimeline, timedSeconds, directions, ruleOf, PREP, RESPONSE } from './format.js?v=202610141550';
+import { clockHtml, runClock, idleClock, fmt } from './clock.js?v=202610141550';
+import { unlockAudio, beep, speak, stopSpeaking, openMicrophone, closeMicrophone, levelMeter, startRecording } from './audio.js?v=202610141550';
+import { scriptUrl, saveScriptUrl, isScriptUrl, ping, report, enqueue, onUpload, pendingUploads, resumeUploads } from './api.js?v=202610141550';
+import { saveRecording, allRecordings } from './store.js?v=202610141550';
+import { TEACHER_CODE, SCRIPT_VERSION } from './config.js?v=202610141550';
 
 const app = document.getElementById('app');
 const params = new URLSearchParams(location.search);
@@ -57,7 +57,7 @@ function renderStart(error = '') {
     <section class="start-hero">
       <p class="eyebrow">Phonology Reading Exam${DEMO ? ' · <b>demo</b>' : ''}</p>
       <h1>Read when the clock says so.</h1>
-      <p class="lede">Three readings, sentence by sentence. A clock counts down ${PREP} seconds to prepare; when it reaches zero
+      <p class="lede">Five readings, sentence by sentence. A clock counts down ${PREP} seconds to prepare; when it reaches zero
         you hear a beep, your microphone turns on, and it records for ${RESPONSE} seconds while you read aloud.
         Pay attention to the words in <b>bold</b>.</p>
       <ol class="parts-overview">
@@ -247,7 +247,7 @@ function examShell() {
 // The numbered sentences, with the targets in bold. The teacher's copy also
 // says what each sentence tests.
 export function readingHtml(r, { rules = false } = {}) {
-  const li = (s) => `<li>${bold(s.text)}${rules ? `<small class="rule">${esc(s.rule)}</small>` : ''}</li>`;
+  const li = (s) => `<li>${bold(s.text)}${rules ? `<small class="rule">${esc(ruleOf(s))}</small>` : ''}</li>`;
   return `<ol class="reading sentences">${r.sentences.map(li).join('')}</ol>`;
 }
 
@@ -652,7 +652,12 @@ document.addEventListener('click', async (e) => {
     status.textContent = 'Testing…';
     try {
       const info = await ping(url);
-      status.textContent = info.app === 'Phonology Reading Exam' ? `✓ Connected to “${info.sheet}”. Press Save.` : `That is the script of “${info.sheet}”, not the Phonology Reading Exam one.`;
+      status.textContent =
+        info.app !== 'Phonology Reading Exam'
+          ? `That is the script of “${info.sheet}”, not the Phonology Reading Exam one.`
+          : (info.version || 1) < SCRIPT_VERSION
+            ? `Connected to “${info.sheet}”, but its script is an old version: paste the new Code.gs, run setup, and deploy a new version (Deploy → Manage deployments → ✏ → New version).`
+            : `✓ Connected to “${info.sheet}”. Press Save.`;
     } catch (err) {
       status.textContent = `Couldn’t connect: ${err.message}`;
     }
