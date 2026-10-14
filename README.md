@@ -75,8 +75,9 @@ Están en [`js/format.js`](js/format.js) (`READINGS`): cada oración es `{ text,
 Después de cambiarlas:
 
 ```bash
-npm run gs    # copia las oraciones a Code.gs y vuelve a armar las partes
-npm test      # controla negritas, una oración por línea y que cada lectura entre en 60 s
+npm run gs        # copia las oraciones a Code.gs y vuelve a armar las partes
+npm run version   # pone una versión nueva a los archivos, así una recarga normal trae los cambios
+npm test          # controla negritas, una oración por línea y que cada lectura entre en 60 s
 ```
 
 y en Apps Script pegá el `Code.gs` nuevo, corré `setup` otra vez y hacé **Implementar → Administrar implementaciones →
