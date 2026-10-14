@@ -1,8 +1,8 @@
 // Talks to the teacher's Google Apps Script (google-apps-script/Code.gs).
 // A text/plain POST avoids a CORS preflight; the script answers with JSON.
 
-import { SCRIPT_URL, RETIRED_URLS } from './config.js?v=202610141749';
-import { allRecordings, saveRecording } from './store.js?v=202610141749';
+import { SCRIPT_URL, RETIRED_URLS } from './config.js?v=202610141811';
+import { allRecordings, saveRecording } from './store.js?v=202610141811';
 
 const URL_RE = /^https:\/\/script\.google\.com\/(?:a\/[^/\s]+\/)?macros\/s\/[\w-]+\/(?:exec|dev)$/;
 const KEY = 'phon.script';
