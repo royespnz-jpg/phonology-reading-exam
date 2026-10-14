@@ -15,5 +15,5 @@ export const RETIRED_URLS = [
 export const TEACHER_CODE = '1234';
 
 // The version of google-apps-script/Code.gs this page needs (its doGet says
-// which one is deployed). 2: five readings.
-export const SCRIPT_VERSION = 2;
+// which one is deployed). 2: five readings; 3: ten readings.
+export const SCRIPT_VERSION = 3;

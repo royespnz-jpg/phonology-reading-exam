@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import vm from 'node:vm';
 import { splitCode, stripMarkers, MAX_LINES } from '../scripts/split-gs.mjs';
-import { readingRows } from '../scripts/readings-gs.mjs';
+import { readingRows, metaRows } from '../scripts/readings-gs.mjs';
 import { SCRIPT_VERSION } from '../js/config.js';
 
 const DIR = new URL('../google-apps-script/', import.meta.url);
@@ -103,7 +103,8 @@ test('setup makes the sheets, the rubric, the readings and the Drive folder', ()
   assert.match(ctx.setup(), /Listo/);
   assert.deepEqual([...sheets.keys()], ['Exams', 'Responses', 'Rubric', 'Readings']);
   assert.equal(sheets.get('Rubric').data.length, 5);
-  assert.equal(sheets.get('Rubric').data[0].length, 6, 'a column for each of the five readings');
+  assert.equal(sheets.get('Rubric').data[0].length, 11, 'a column for each of the ten readings');
+  assert.equal(sheets.get('Rubric').data[1][4], 'At least 27 of the 30 adjustments are made: linking, assimilation, deletion, reductions.');
   const readings = sheets.get('Readings').data;
   assert.equal(readings.length, 1 + readingRows().length);
   assert.deepEqual(readings[0], ['Reading', 'Sentence', 'Text (targets in CAPITALS)', 'Target words', 'What it tests']);
@@ -111,23 +112,25 @@ test('setup makes the sheets, the rubric, the readings and the Drive folder', ()
   ctx.setup();
   assert.equal(sheets.get('Readings').data.length, 1 + readingRows().length);
   assert.equal(sheets.get('Rubric').data.length, 5);
-  assert.equal(sheets.get('Rubric').data[0][5], 'Reading 5 · Word stress');
+  assert.equal(sheets.get('Rubric').data[0][10], 'Reading 10 · Word stress 4');
   assert.ok(folders.has('Phonology Reading Exam — Recordings'));
   assert.deepEqual(JSON.parse(ctx.doGet().body), { ok: true, app: 'Phonology Reading Exam', sheet: 'Phonology 2026', version: SCRIPT_VERSION });
 });
 
 test('the readings in the script are the ones on the page', () => {
-  const rows = vm.runInNewContext(`${code.match(/const READINGS_ROWS = \[[\s\S]*?\n\];/)[0]}; READINGS_ROWS`);
-  assert.deepEqual(JSON.parse(JSON.stringify(rows)), readingRows(), 'run: npm run gs');
+  const { ctx } = makeEnv();
+  assert.deepEqual(JSON.parse(JSON.stringify(ctx.readingRows_())), readingRows(), 'run: npm run gs');
+  assert.deepEqual(JSON.parse(JSON.stringify(vm.runInContext('READINGS_META', ctx))), metaRows(), 'run: npm run gs');
+  assert.deepEqual(JSON.parse(JSON.stringify(vm.runInContext('QUESTIONS', ctx))), metaRows().map(([id]) => id));
   assert.deepEqual(readingRows()[0], [1, 1, 'We NEED a BIG table for the family party tonight.', 'need, big', 'need: /i/ · big: /ɪ/']);
-  assert.equal(readingRows().length, 75);
+  assert.equal(readingRows().length, 150);
 });
 
-test('an exam: start, five readings in the student’s folder, finish', () => {
+test('an exam: start, ten readings in the student’s folder, finish', () => {
   const { post, sheets, files } = makeEnv();
   assert.equal(post({ type: 'start', ...who, startedAt: '2026-10-13T15:00:00Z' }).ok, true);
   assert.equal(post({ type: 'start', ...who }).duplicate, true);
-  for (const [qid, label] of [['r1', 'Reading 1'], ['r2', 'Reading 2'], ['r3', 'Reading 3'], ['r4', 'Reading 4'], ['r5', 'Reading 5']]) {
+  for (const [qid, label] of metaRows().map(([id], i) => [id, `Reading ${i + 1}`])) {
     const res = post({ type: 'recording', ...who, qid, label, prompt: `1. ${label.toUpperCase()}.`, durationSec: 59.6, mime: 'audio/webm;codecs=opus', audio, recordedAt: '2026-10-13T15:05:00Z' });
     assert.equal(res.ok, true, res.error);
     assert.match(res.url, /^https:\/\/drive\/file\//);
@@ -135,18 +138,19 @@ test('an exam: start, five readings in the student’s folder, finish', () => {
   // The same reading sent twice (the first reply got lost) is saved once.
   const again = post({ type: 'recording', ...who, qid: 'r2', mime: 'audio/webm', audio });
   assert.equal(again.duplicate, true);
-  assert.equal(files.length, 5);
+  assert.equal(files.length, 10);
+  assert.equal(files[9].blob.name, 'Reading 10.webm');
   assert.equal(files[0].folder, 'Phonology Reading Exam — Recordings/3B/Ana Pérez · x7y8z9');
   assert.equal(files[0].blob.name, 'Reading 1.webm');
   const responses = sheets.get('Responses');
-  assert.equal(responses.data.length, 6);
+  assert.equal(responses.data.length, 11);
   assert.deepEqual(responses.data[1].slice(1, 6), ['Ana Pérez', '3B', 'Reading 1', '1. READING 1.', 60]);
   assert.equal(responses.data[1][9], who.attempt);
   assert.match(responses.formulas.get('2,7'), /^=HYPERLINK\("https:\/\/drive\/file\/0","▶ Listen"\)$/);
 
   assert.equal(post({ type: 'finish', ...who, leftPage: 1, resumed: 0, finishedAt: '2026-10-13T15:08:00Z' }).ok, true);
   const exam = sheets.get('Exams').data[1];
-  assert.deepEqual([exam[1], exam[2], exam[3], exam[4], exam[6], exam[7], exam[10]], ['Ana Pérez', '3B', 'finished', 5, 1, 0, who.attempt]);
+  assert.deepEqual([exam[1], exam[2], exam[3], exam[4], exam[6], exam[7], exam[10]], ['Ana Pérez', '3B', 'finished', 10, 1, 0, who.attempt]);
   assert.match(sheets.get('Exams').formulas.get('2,9'), /SUMIFS\(Responses!H:H,Responses!J:J,K2\)/);
 });
 
@@ -158,7 +162,7 @@ test('a demo is marked as one', () => {
 
 test('bad requests are refused with a message', () => {
   const { post } = makeEnv();
-  assert.match(post({ type: 'recording', ...who, qid: 'r6', mime: 'audio/webm', audio }).error, /Lectura desconocida/);
+  assert.match(post({ type: 'recording', ...who, qid: 'r11', mime: 'audio/webm', audio }).error, /Lectura desconocida/);
   assert.match(post({ type: 'recording', ...who, qid: 'r1', mime: 'text/html', audio }).error, /no es un audio/);
   assert.match(post({ type: 'recording', ...who, attempt: '../x', qid: 'r1', mime: 'audio/webm', audio }).error, /Intento inválido/);
   assert.match(post({ type: 'start', ...who, student: ' ' }).error, /Falta el nombre/);

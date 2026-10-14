@@ -1,9 +1,9 @@
-import { READINGS, RESPONSES, INTRO, buildTimeline, timedSeconds, directions, ruleOf, PREP, RESPONSE } from './format.js?v=202610141550';
-import { clockHtml, runClock, idleClock, fmt } from './clock.js?v=202610141550';
-import { unlockAudio, beep, speak, stopSpeaking, openMicrophone, closeMicrophone, levelMeter, startRecording } from './audio.js?v=202610141550';
-import { scriptUrl, saveScriptUrl, isScriptUrl, ping, report, enqueue, onUpload, pendingUploads, resumeUploads } from './api.js?v=202610141550';
-import { saveRecording, allRecordings } from './store.js?v=202610141550';
-import { TEACHER_CODE, SCRIPT_VERSION } from './config.js?v=202610141550';
+import { READINGS, RESPONSES, INTRO, buildTimeline, timedSeconds, directions, ruleOf, PREP, RESPONSE } from './format.js?v=202610141749';
+import { clockHtml, runClock, idleClock, fmt } from './clock.js?v=202610141749';
+import { unlockAudio, beep, speak, stopSpeaking, openMicrophone, closeMicrophone, levelMeter, startRecording } from './audio.js?v=202610141749';
+import { scriptUrl, saveScriptUrl, isScriptUrl, ping, report, enqueue, onUpload, pendingUploads, resumeUploads } from './api.js?v=202610141749';
+import { saveRecording, allRecordings } from './store.js?v=202610141749';
+import { TEACHER_CODE, SCRIPT_VERSION } from './config.js?v=202610141749';
 
 const app = document.getElementById('app');
 const params = new URLSearchParams(location.search);
@@ -57,14 +57,12 @@ function renderStart(error = '') {
     <section class="start-hero">
       <p class="eyebrow">Phonology Reading Exam${DEMO ? ' · <b>demo</b>' : ''}</p>
       <h1>Read when the clock says so.</h1>
-      <p class="lede">Five readings, sentence by sentence. A clock counts down ${PREP} seconds to prepare; when it reaches zero
+      <p class="lede">Ten readings, sentence by sentence. A clock counts down ${PREP} seconds to prepare; when it reaches zero
         you hear a beep, your microphone turns on, and it records for ${RESPONSE} seconds while you read aloud.
         Pay attention to the words in <b>bold</b>.</p>
+      <p class="po-time">Each reading: ${PREP} s to prepare · ${RESPONSE} s to read.</p>
       <ol class="parts-overview">
-        ${READINGS.map(
-          (r) => `<li><span class="po-label">Reading ${r.n}</span><span class="po-title">${esc(r.title)}</span>
-            <span class="po-time">${PREP} s to prepare · ${RESPONSE} s to read</span></li>`,
-        ).join('')}
+        ${READINGS.map((r) => `<li><span class="po-label">Reading ${r.n}</span><span class="po-title">${esc(r.title)}</span></li>`).join('')}
       </ol>
     </section>
     <form class="card start-form" data-start novalidate>
@@ -520,16 +518,20 @@ function renderPreview() {
   stopSpeaking();
   const step = P.steps[P.at];
   const r = READINGS.find((x) => x.id === step.reading);
-  const chip = (s, i) => {
-    const label = s.type === 'intro' ? 'Intro' : { part: 'Directions', prep: 'Prepare', response: 'Read' }[s.type];
-    return `<button type="button" class="pv-step${i === P.at ? ' now' : ''}" data-pv-go="${i}" aria-current="${i === P.at ? 'step' : 'false'}">${label}</button>`;
+  // First the readings (each opens on its directions), then the steps of the chosen one.
+  const first = (id) => P.steps.findIndex((s) => s.reading === id);
+  const readingChip = (x) => {
+    const now = x ? x.id === step.reading : step.type === 'intro';
+    return `<button type="button" class="pv-step${now ? ' now' : ''}" data-pv-go="${x ? first(x.id) : 0}" title="${x ? esc(x.title) : 'Introduction'}"
+      aria-current="${now ? 'true' : 'false'}">${x ? `${x.n} · ${esc(x.title)}` : 'Intro'}</button>`;
   };
-  const groups = [`<div class="pv-group"><span class="pv-group-label">Start</span>${chip(P.steps[0], 0)}</div>`].concat(
-    READINGS.map((x) => {
-      const idx = P.steps.map((s, i) => [s, i]).filter(([s]) => s.reading === x.id);
-      return `<div class="pv-group"><span class="pv-group-label">Reading ${x.n}</span>${idx.map(([s, i]) => chip(s, i)).join('')}</div>`;
-    }),
-  );
+  const stepChip = (s, i) =>
+    `<button type="button" class="pv-step${i === P.at ? ' now' : ''}" data-pv-go="${i}" aria-current="${i === P.at ? 'step' : 'false'}">${{ part: 'Directions', prep: 'Prepare', response: 'Read' }[s.type]}</button>`;
+  const steps = r ? P.steps.map((s, i) => [s, i]).filter(([s]) => s.reading === r.id) : [];
+  const groups = [
+    `<div class="pv-group pv-readings"><span class="pv-group-label">Readings</span>${[null, ...READINGS].map(readingChip).join('')}</div>`,
+    steps.length ? `<div class="pv-group"><span class="pv-group-label">Reading ${r.n}</span>${steps.map(([s, i]) => stepChip(s, i)).join('')}</div>` : '',
+  ];
   app.innerHTML = `<div class="stage preview">
     <header class="stage-top">
       <div class="brand"><span class="dot"></span>Phonology Reading Exam</div>

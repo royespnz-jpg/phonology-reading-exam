@@ -1,8 +1,9 @@
-/* ── Phonology Exam · parte 3 de 8 ── */
+/* ── Phonology Exam · parte 3 de 10 ── */
 
+/* readings:start */
 /* The readings, as the page shows them (the words in CAPITALS are the targets),
-   and what each sentence tests. Made from js/format.js: npm run gs. */
-const READINGS_ROWS = [
+   and what each target tests. Made from js/format.js: npm run gs. */
+const READINGS_ROWS_1 = [
   [1,1,"We NEED a BIG table for the family party tonight.","need, big","need: /i/ · big: /ɪ/"],
   [1,2,"Please write your name with a PEN, not with a PIN.","pen, pin","pen: /ɛ/ · pin: /ɪ/"],
   [1,3,"We had to WAIT a long time on the WET grass.","wait, wet","wait: /eɪ/ · wet: /ɛ/"],
@@ -48,36 +49,21 @@ const READINGS_ROWS = [
   [3,13,"My little sister WANTED some of the CHOCOLATES.","wanted, chocolates","wanted: -ed = /ɪd/ · chocolates: -s = /s/"],
   [3,14,"The tired boys WAITED a long time for their RIDES.","waited, rides","waited: -ed = /ɪd/ · rides: -s = /z/"],
   [3,15,"We NEEDED two big SUITCASES for the trip.","needed, suitcases","needed: -ed = /ɪd/ · suitcases: -s = /ɪz/"],
-  [4,1,"DID YOU see the new movie at the theater LAST NIGHT?","Did you, last night","Did you: palatalization: /d/ + /y/ → /dʒ/ · last night: deletion of /t/ between words"],
+  [4,1,"DID YOU see the new movie at the theater LAST NIGHT?","Did you, last night","Did you: palatalization: /d/ + /y/ → /dʒ/ · last night: deletion of /t/ or /d/ between words"],
   [4,2,"I’m GOING TO STAY UP late to finish my homework.","going to, stay up","going to: reduction: going to → gonna · stay up: linking with a /y/ glide"],
-  [4,3,"GIVE ME a big piece of that CHOCOLATE cake, please.","Give me, chocolate","Give me: assimilation: give me → gimme · chocolate: syncope (choc’late)"],
-  [4,4,"We HAVE TO GO AWAY for a week in December.","have to, go away","have to: regressive assimilation: have to → hafta · go away: linking with a /w/ glide"],
+  [4,3,"GIVE ME a big piece of that CHOCOLATE cake, please.","Give me, chocolate","Give me: assimilation: give me → gimme, let me → lemme · chocolate: syncope (a lost unstressed vowel)"],
+  [4,4,"We HAVE TO GO AWAY for a week in December.","have to, go away","have to: reduction: have to, has to → hafta, hasta · go away: linking with a /w/ glide"],
   [4,5,"IS YOUR older brother TWENTY years old?","Is your, twenty","Is your: palatalization: /z/ + /y/ → /ʒ/ · twenty: deletion of /t/ after /n/"],
-  [4,6,"I’LL buy LOTS OF flowers for my grandmother.","I’ll, lots of","I’ll: contraction · lots of: deletion of /v/ in “of”"],
-  [4,7,"The little kids KEEP OUT of the FOOTBALL field.","keep out, football","keep out: consonant + vowel linking · football: unreleased stop before a stop"],
-  [4,8,"The GOOD BOY HAD TO wait outside the classroom.","good boy, had to","good boy: regressive assimilation: /d/ → /b/ · had to: progressive assimilation: had to → hatta"],
+  [4,6,"I’LL buy LOTS OF flowers for my grandmother.","I’ll, lots of","I’ll: contraction (blend) · lots of: deletion of /v/ in “of”"],
+  [4,7,"The little kids KEEP OUT of the FOOTBALL field.","keep out, football","keep out: consonant + vowel linking · football: unreleased stop"],
+  [4,8,"The GOOD BOY HAD TO wait outside the classroom.","good boy, had to","good boy: regressive assimilation: /d/, /t/ → /b/, /g/, /p/, /k/ · had to: progressive assimilation"],
   [4,9,"I know WHAT YOU WANT TO say to the teacher.","what you, want to","what you: palatalization: /t/ + /y/ → /tʃ/ · want to: reduction: want to → wanna"],
-  [4,10,"HIS SHIRT has a BIG GAP in the back.","His shirt, big gap","His shirt: assimilation: /z/ + /ʃ/ → /ʃ/ · big gap: gemination (one long /g/)"],
-  [4,11,"We USED TO go skiing in the mountains every FEBRUARY.","used to, February","used to: regressive assimilation: used to → usta · February: disappearing /r/ (Feb’uary)"],
+  [4,10,"HIS SHIRT has a BIG GAP in the back.","His shirt, big gap","His shirt: regressive assimilation: /s/, /z/ + /ʃ/ → /ʃ/ · big gap: gemination (one long consonant)"],
+  [4,11,"We USED TO go skiing in the mountains every FEBRUARY.","used to, February","used to: reduction: used to → usta · February: disappearing /r/"],
   [4,12,"The WATER in the lake is KIND OF cold today.","water, kind of","water: flap /t/ · kind of: reduction: kind of → kinda"],
-  [4,13,"You CAN GO to the party if you ASK HER first.","can go, ask her","can go: regressive assimilation: /n/ → /ŋ/ · ask her: deletion of /h/"],
-  [4,14,"I’ve GOT TO thank them all for their KINDNESS.","got to, kindness","got to: reduction: got to → gotta · kindness: deletion of /d/ in a cluster of three (kin’ness)"],
-  [4,15,"You CAN BUY a ticket, but FIND OUT the price first.","can buy, find out","can buy: regressive assimilation: /n/ → /m/ · find out: resyllabification (fin-dout)"],
-  [5,1,"The new EMPLOYEE has a UNIQUE idea.","employee, unique","employee: stressed suffix -ee · unique: stressed suffix -ique"],
-  [5,2,"Our VOLUNTEER speaks JAPANESE at home.","volunteer, Japanese","volunteer: stressed suffix -eer · Japanese: stressed suffix -ese"],
-  [5,3,"The band will ENTERTAIN us at a PICTURESQUE hotel.","entertain, picturesque","entertain: stressed suffix -ain (verbs) · picturesque: stressed suffix -esque"],
-  [5,4,"Smoking a CIGARETTE is a bad DECISION.","cigarette, decision","cigarette: stressed suffix -ette · decision: stress before -ion"],
-  [5,5,"PHYSICAL exercise is a FANTASTIC way to relax.","Physical, fantastic","Physical: stress before -ical · fantastic: stress before -ic"],
-  [5,6,"The OFFICIAL PUBLICITY starts today.","official, publicity","official: stress before -ial · publicity: stress before -ity"],
-  [5,7,"The CANADIAN restaurant serves DELICIOUS food.","Canadian, delicious","Canadian: stress before -ian · delicious: stress before -ious"],
-  [5,8,"Please CLASSIFY these SENSITIVE files.","classify, sensitive","classify: stress before -ify · sensitive: stress before -itive"],
-  [5,9,"Her ATTITUDE toward BIOLOGY changed this year.","attitude, biology","attitude: stress before -itude · biology: stress before -logy"],
-  [5,10,"GEOGRAPHY helps us APPRECIATE other cultures.","Geography, appreciate","Geography: stress before -graphy · appreciate: -ate: two syllables before the suffix"],
-  [5,11,"The SECRETARY made a small MISTAKE in the letter.","secretary, mistake","secretary: -ary: two syllables before the suffix · mistake: noun stressed on the root (exception)"],
-  [5,12,"Please APOLOGIZE to your MOTHER for being late.","apologize, mother","apologize: -ize: two syllables before the suffix · mother: two-syllable noun: first syllable"],
-  [5,13,"The NEWSPAPER says that prices will INCREASE again.","newspaper, increase","newspaper: compound noun: first word · increase: noun–verb pair: verb on the root"],
-  [5,14,"Please PICK UP the BEAUTIFUL flowers.","pick up, beautiful","pick up: two-word verb: last word · beautiful: suffix -ful does not move the stress"],
-  [5,15,"We INTRODUCE OURSELVES on the first day.","introduce, ourselves","introduce: first syllable of the root · ourselves: reflexive pronoun: last syllable"],
+  [4,13,"You CAN GO to the party if you ASK HER first.","can go, ask her","can go: regressive assimilation: /n/ → /ŋ/ · ask her: deletion of /h/ in he, him, her, his"],
+  [4,14,"I’ve GOT TO thank them all for their KINDNESS.","got to, kindness","got to: reduction: got to → gotta · kindness: deletion of /t/ or /d/ in a cluster of three"],
+  [4,15,"You CAN BUY a ticket, but FIND OUT the price first.","can buy, find out","can buy: regressive assimilation: /n/ → /m/ · find out: resyllabification"],
 ];
 
-/* ── fin de la parte 3 de 8 ── */
+/* ── fin de la parte 3 de 10 ── */
