@@ -65,7 +65,9 @@ Las consignas se oyen (voz del navegador) y se leen en pantalla. Son unos 8 minu
 | **Rubric** | Criterios de 0 a 3 para cada lectura |
 | **Readings** | Las oraciones, sus targets y qué regla evalúa cada una |
 
-Los audios quedan en *Phonology Reading Exam — Recordings / grupo / nombre · intento*.
+Los alumnos solo escriben su **nombre completo**. Los audios quedan en *Phonology Reading Exam — Recordings / No group /
+nombre · intento*. Si querés separarlos por curso, agregá `?g=` al link (por ejemplo `…/phonology-reading-exam/?g=10-1`):
+ese grupo va a la columna *Group* y a su propia carpeta, sin que el alumno lo escriba.
 
 ## Cambiar las oraciones
 
