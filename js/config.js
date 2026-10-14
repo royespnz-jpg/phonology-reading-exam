@@ -8,3 +8,8 @@ export const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzi6kHiUefhgL
 export const RETIRED_URLS = [
   'https://script.google.com/macros/s/AKfycbyttqRw62yK_FaNUo16KjWi6fr3iHaJRzVYo4vBQ_I3BYmWjLJ4h5h2TbgXQ-yZWThy/exec',
 ];
+
+// The code that opens the teacher pages (set-up and the free preview of the
+// readings). It keeps students out of them during the exam; it is not a
+// password: anyone who reads the page's code can find it.
+export const TEACHER_CODE = '1234';

@@ -1,8 +1,9 @@
-import { READINGS, RESPONSES, INTRO, buildTimeline, timedSeconds, directions, PREP, RESPONSE } from './format.js?v=202610140512';
-import { clockHtml, runClock, idleClock, fmt } from './clock.js?v=202610140512';
-import { unlockAudio, beep, speak, stopSpeaking, openMicrophone, closeMicrophone, levelMeter, startRecording } from './audio.js?v=202610140512';
-import { scriptUrl, saveScriptUrl, isScriptUrl, ping, report, enqueue, onUpload, pendingUploads, resumeUploads } from './api.js?v=202610140512';
-import { saveRecording, allRecordings } from './store.js?v=202610140512';
+import { READINGS, RESPONSES, INTRO, buildTimeline, timedSeconds, directions, PREP, RESPONSE } from './format.js?v=202610140515';
+import { clockHtml, runClock, idleClock, fmt } from './clock.js?v=202610140515';
+import { unlockAudio, beep, speak, stopSpeaking, openMicrophone, closeMicrophone, levelMeter, startRecording } from './audio.js?v=202610140515';
+import { scriptUrl, saveScriptUrl, isScriptUrl, ping, report, enqueue, onUpload, pendingUploads, resumeUploads } from './api.js?v=202610140515';
+import { saveRecording, allRecordings } from './store.js?v=202610140515';
+import { TEACHER_CODE } from './config.js?v=202610140515';
 
 const app = document.getElementById('app');
 const params = new URLSearchParams(location.search);
@@ -46,7 +47,7 @@ function clearSession() {
 }
 
 const newId = () => `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
-const who = () => `${esc(S.student)}${S.group ? ` · ${esc(S.group)}` : ''}`;
+const who = () => (S ? `${esc(S.student)}${S.group ? ` · ${esc(S.group)}` : ''}` : 'Student name');
 
 // ─── 1 · start ──────────────────────────────────────────────────────────────
 
@@ -250,7 +251,7 @@ export function readingHtml(r, { rules = false } = {}) {
   return `<ol class="reading sentences">${r.sentences.map(li).join('')}</ol>`;
 }
 
-function taskHtml(step) {
+function taskHtml(step, { rules = false } = {}) {
   if (step.type === 'intro') {
     return `<p class="task-label">${who()}</p><h2>Phonology reading test</h2>
       <p class="directions">${esc(INTRO)}</p>`;
@@ -260,7 +261,7 @@ function taskHtml(step) {
   // The sentences appear only when the preparation clock starts: during the
   // directions there is nothing to read, so everyone gets the same 60 seconds.
   if (step.type === 'part') return `${head}<p class="directions"><b>Directions:</b> ${esc(directions(r))}</p>`;
-  return head + readingHtml(r);
+  return head + readingHtml(r, { rules });
 }
 
 function setCue(text, kind = '') {
@@ -430,8 +431,8 @@ function renderTeacher(message = '') {
   const base = `${location.origin}${location.pathname}`;
   const link = (extra = '') => `${base}?${url ? `s=${encodeURIComponent(url)}&` : ''}${extra}`.replace(/[?&]$/, '');
   app.innerHTML = `<main class="screen teacher">
-    <p class="eyebrow">Teacher</p>
-    <h1>Set up the exam</h1>
+    <div class="teacher-head"><div><p class="eyebrow">Teacher</p>
+    <h1>Set up the exam</h1></div><button type="button" class="btn ghost small" data-lock>Lock and leave</button></div>
     <form class="card" data-teacher>
       <h2>1 · Your Google Script</h2>
       <p>Paste the web app URL of the exam’s Google Apps Script (it ends in <code>/exec</code>). Recordings go to your Drive and
@@ -446,16 +447,152 @@ function renderTeacher(message = '') {
       <div class="link-row"><code>${esc(link())}</code><button class="btn small" data-copy="${esc(link())}">Copy</button></div>
     </section>
     <section class="card">
-      <h2>3 · The readings</h2>
+      <h2>3 · Go through the readings</h2>
+      <p>See every step as the students see it — the directions, the preparation and the reading of each part — in any
+        order, with the clock and the voice. Nothing is recorded or sent.</p>
+      <p><a class="btn primary" href="#preview">Open the preview</a></p>
+    </section>
+    <section class="card">
+      <h2>4 · The readings</h2>
       ${READINGS.map((r) => `<h3>Reading ${r.n} · ${esc(r.title)}</h3>${readingHtml(r, { rules: true })}`).join('')}
     </section>
     <section class="card">
-      <h2>4 · Try it</h2>
+      <h2>5 · Try it</h2>
       <p>Try the whole exam with its real clocks (about ${Math.round((READINGS.length * (PREP + RESPONSE)) / 60) + 2} minutes); your
         recordings go to your sheet like a student’s, marked <i>demo</i>.</p>
       <p><a class="btn ghost" href="${esc(link('demo=1'))}">Try the exam</a></p>
     </section>
   </main>`;
+}
+
+// ─── teacher access ─────────────────────────────────────────────────────────
+// The teacher pages show every sentence, so students get a code screen first.
+// The code opens them for this tab only (sessionStorage).
+
+const UNLOCK = 'phon.teacher';
+
+function unlocked() {
+  try {
+    return sessionStorage.getItem(UNLOCK) === TEACHER_CODE;
+  } catch {
+    return false;
+  }
+}
+
+function setUnlocked(on) {
+  try {
+    if (on) sessionStorage.setItem(UNLOCK, TEACHER_CODE);
+    else sessionStorage.removeItem(UNLOCK);
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+function renderCode(error = '') {
+  app.innerHTML = `<main class="screen code">
+    <form class="card code-card" data-code novalidate>
+      <p class="eyebrow">Teacher</p>
+      <h1>Teacher access</h1>
+      <p class="muted">Write the teacher’s code to set up the exam and to go through the readings.</p>
+      <label>Code<input name="code" inputmode="numeric" autocomplete="off" maxlength="12" autofocus></label>
+      <p class="form-error" data-error role="alert">${esc(error)}</p>
+      <div class="row"><button class="btn primary" type="submit">Enter</button><a class="btn ghost" href="#">Back</a></div>
+    </form>
+  </main>`;
+  app.querySelector('[name="code"]').focus();
+}
+
+// ─── teacher preview ────────────────────────────────────────────────────────
+// Every step of the exam, as the students see it, in any order: nothing is
+// recorded or sent.
+
+const PREVIEW = { steps: buildTimeline(), at: 0, rules: false, clock: null };
+
+const stepName = (step) =>
+  step.type === 'intro'
+    ? 'Introduction'
+    : `Reading ${READINGS.find((r) => r.id === step.reading).n} · ${{ part: 'Directions', prep: 'Preparation', response: 'Reading aloud' }[step.type]}`;
+
+function renderPreview() {
+  const P = PREVIEW;
+  P.clock?.stop();
+  P.clock = null;
+  stopSpeaking();
+  const step = P.steps[P.at];
+  const r = READINGS.find((x) => x.id === step.reading);
+  const chip = (s, i) => {
+    const label = s.type === 'intro' ? 'Intro' : { part: 'Directions', prep: 'Prepare', response: 'Read' }[s.type];
+    return `<button type="button" class="pv-step${i === P.at ? ' now' : ''}" data-pv-go="${i}" aria-current="${i === P.at ? 'step' : 'false'}">${label}</button>`;
+  };
+  const groups = [`<div class="pv-group"><span class="pv-group-label">Start</span>${chip(P.steps[0], 0)}</div>`].concat(
+    READINGS.map((x) => {
+      const idx = P.steps.map((s, i) => [s, i]).filter(([s]) => s.reading === x.id);
+      return `<div class="pv-group"><span class="pv-group-label">Reading ${x.n}</span>${idx.map(([s, i]) => chip(s, i)).join('')}</div>`;
+    }),
+  );
+  app.innerHTML = `<div class="stage preview">
+    <header class="stage-top">
+      <div class="brand"><span class="dot"></span>Phonology Reading Exam</div>
+      <div class="progress">
+        <span class="progress-label">${r ? `Reading ${r.n} of ${READINGS.length}` : 'Introduction'}</span>
+        <span class="progress-bars" aria-hidden="true">${RESPONSES.map((x) => `<i class="${x.id === step.reading ? 'now' : ''}"></i>`).join('')}</span>
+      </div>
+      <div class="who"><span class="pv-badge">Teacher preview</span></div>
+    </header>
+    <nav class="pv-bar" aria-label="Steps of the exam">
+      <div class="pv-steps">${groups.join('')}</div>
+      <div class="pv-actions">
+        <button type="button" class="btn small" data-pv-prev ${P.at === 0 ? 'disabled' : ''}>← Previous</button>
+        <button type="button" class="btn small" data-pv-next ${P.at === P.steps.length - 1 ? 'disabled' : ''}>Next →</button>
+        <button type="button" class="btn small ghost" data-pv-say>▶ Hear what they hear</button>
+        ${step.seconds ? `<button type="button" class="btn small ghost" data-pv-clock>Start the ${step.seconds}-second clock</button>` : ''}
+        ${step.type === 'prep' || step.type === 'response' ? `<label class="pv-toggle"><input type="checkbox" data-pv-rules ${P.rules ? 'checked' : ''}> Show what each sentence tests</label>` : ''}
+        <a class="btn small ghost" href="#teacher">Teacher page</a>
+      </div>
+      <p class="pv-note">${esc(stepName(step))} · step ${P.at + 1} of ${P.steps.length}. Nothing is recorded or sent in the preview. Use ← → to move.</p>
+    </nav>
+    <main class="stage-main">
+      <section class="task" data-task>${taskHtml(step, { rules: P.rules })}</section>
+      <aside class="clock-panel">
+        ${clockHtml()}
+        ${step.type === 'response' ? `<div class="rec"><span class="rec-dot"></span><b>Recording</b><span class="muted small">(not in the preview)</span></div>` : ''}
+        <p class="cue" data-cue></p>
+      </aside>
+    </main>
+  </div>`;
+  const clock = app.querySelector('.clock');
+  if (step.type === 'prep') {
+    idleClock(clock, { phase: 'Preparation time', time: fmt(step.seconds), sub: 'Prepare' });
+    setCue('Read the sentences silently and prepare.', 'prep');
+  } else if (step.type === 'response') {
+    idleClock(clock, { phase: 'Reading time', time: fmt(step.seconds), sub: 'Recording' });
+    setCue('Read aloud now: the microphone is recording.', 'live');
+  } else {
+    idleClock(clock, { phase: 'Listen', time: '··', sub: 'Directions' });
+    setCue('Listen to the directions.');
+  }
+}
+
+function previewGo(i) {
+  PREVIEW.at = Math.max(0, Math.min(PREVIEW.steps.length - 1, i));
+  renderPreview();
+  window.scrollTo({ top: 0 });
+}
+
+function previewClock(button) {
+  const step = PREVIEW.steps[PREVIEW.at];
+  if (PREVIEW.clock) {
+    PREVIEW.clock.stop();
+    return;
+  }
+  const clock = app.querySelector('.clock');
+  const mode = step.type === 'prep' ? 'prep' : 'response';
+  PREVIEW.clock = runClock(clock, step.seconds, { mode, phase: mode === 'prep' ? 'Preparation time' : 'Reading time', sub: mode === 'prep' ? 'Prepare' : 'Recording' });
+  button.textContent = 'Stop the clock';
+  PREVIEW.clock.done.then(() => {
+    PREVIEW.clock = null;
+    if (button.isConnected) button.textContent = `Start the ${step.seconds}-second clock`;
+  });
 }
 
 // ─── events ─────────────────────────────────────────────────────────────────
@@ -464,6 +601,11 @@ document.addEventListener('submit', (e) => {
   const form = e.target;
   e.preventDefault();
   if (form.matches('[data-start]')) submitStart(form);
+  if (form.matches('[data-code]')) {
+    if (String(new FormData(form).get('code') || '').trim() !== TEACHER_CODE) return renderCode('That is not the teacher’s code.');
+    setUnlocked(true);
+    start();
+  }
   if (form.matches('[data-teacher]')) {
     const url = String(new FormData(form).get('url') || '').trim();
     if (url && !isScriptUrl(url)) return renderTeacher('That is not an Apps Script web app URL (it ends in /exec).');
@@ -475,7 +617,18 @@ document.addEventListener('submit', (e) => {
 document.addEventListener('click', async (e) => {
   const t = e.target.closest('button, a');
   if (!t) return;
-  if (t.matches('[data-mic]')) allowMic(t);
+  if (t.matches('[data-pv-go]')) previewGo(Number(t.dataset.pvGo));
+  else if (t.matches('[data-pv-prev]')) previewGo(PREVIEW.at - 1);
+  else if (t.matches('[data-pv-next]')) previewGo(PREVIEW.at + 1);
+  else if (t.matches('[data-pv-say]')) {
+    unlockAudio();
+    stopSpeaking();
+    speak(PREVIEW.steps[PREVIEW.at].say);
+  } else if (t.matches('[data-pv-clock]')) previewClock(t);
+  else if (t.matches('[data-lock]')) {
+    setUnlocked(false);
+    location.hash = '';
+  } else if (t.matches('[data-mic]')) allowMic(t);
   else if (t.matches('[data-test-rec]')) testRecording(t);
   else if (t.matches('[data-sound]')) testSound(t);
   else if (t.matches('[data-back]')) {
@@ -506,6 +659,19 @@ document.addEventListener('click', async (e) => {
   }
 });
 
+document.addEventListener('change', (e) => {
+  if (e.target.matches('[data-pv-rules]')) {
+    PREVIEW.rules = e.target.checked;
+    renderPreview();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (location.hash !== '#preview' || !unlocked() || e.target.closest('input, textarea')) return;
+  if (e.key === 'ArrowRight') previewGo(PREVIEW.at + 1);
+  if (e.key === 'ArrowLeft') previewGo(PREVIEW.at - 1);
+});
+
 document.addEventListener('visibilitychange', () => {
   if (!running) return;
   if (document.hidden) {
@@ -525,7 +691,12 @@ window.addEventListener('beforeunload', (e) => {
 
 function start() {
   resumeUploads();
-  if (location.hash === '#teacher') return renderTeacher();
+  stopSpeaking();
+  PREVIEW.clock?.stop();
+  if (location.hash === '#teacher' || location.hash === '#preview') {
+    if (!unlocked()) return renderCode();
+    return location.hash === '#preview' ? renderPreview() : renderTeacher();
+  }
   const saved = savedSession();
   if (saved && !saved.finished) {
     S = { ...saved, steps: buildTimeline({ scale: SCALE }) };
