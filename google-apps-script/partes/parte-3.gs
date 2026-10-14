@@ -1,42 +1,83 @@
-/* ── Phonology Exam · parte 3 de 7 ── */
+/* ── Phonology Exam · parte 3 de 8 ── */
 
-function setup() {
-  Object.keys(SHEETS).forEach(function (k) { sheet_(k); });
-  const rubric = sheet_('rubric');
-  if (rubric.getLastRow() < 2) {
-    rubric.getRange(2, 1, RUBRIC.length, RUBRIC[0].length).setValues(RUBRIC);
-  }
-  const readings = sheet_('readings');
-  if (readings.getLastRow() > 1) {
-    readings.getRange(2, 1, readings.getLastRow() - 1, readings.getLastColumn()).clearContent();
-  }
-  readings.getRange(2, 1, READINGS_ROWS.length, READINGS_ROWS[0].length).setValues(READINGS_ROWS);
-  rootFolder_();
-  const msg = 'Listo: hojas Exams, Responses, Rubric y Readings, y la carpeta «' + ROOT_FOLDER +
-    '» en tu Drive. Ahora implementá la aplicación web.';
-  Logger.log(msg);
-  return msg;
-}
+/* The readings, as the page shows them (the words in CAPITALS are the targets),
+   and what each sentence tests. Made from js/format.js: npm run gs. */
+const READINGS_ROWS = [
+  [1,1,"We NEED a BIG table for the family party tonight.","need, big","need: /i/ · big: /ɪ/"],
+  [1,2,"Please write your name with a PEN, not with a PIN.","pen, pin","pen: /ɛ/ · pin: /ɪ/"],
+  [1,3,"We had to WAIT a long time on the WET grass.","wait, wet","wait: /eɪ/ · wet: /ɛ/"],
+  [1,4,"EIGHT PEOPLE came to the meeting at the library.","Eight, people","Eight: /eɪ/ · people: /i/"],
+  [1,5,"Put on your HAT, because it is very HOT outside.","hat, hot","hat: /æ/ · hot: /ɑ/"],
+  [1,6,"The new CURTAIN in her room is made of COTTON.","curtain, cotton","curtain: /ɚ/ · cotton: /ɑ/"],
+  [1,7,"A little BIRD ate a BUG on the branch of the tree.","bird, bug","bird: /ɚ/ · bug: /ʌ/"],
+  [1,8,"I left my CUP and my CAP on the table at school.","cup, cap","cup: /ʌ/ · cap: /æ/"],
+  [1,9,"My parents BOUGHT a small BOAT last summer.","bought, boat","bought: /ɔ/ · boat: /oʊ/"],
+  [1,10,"JOE is coming home from college in JUNE.","Joe, June","Joe: /oʊ/ · June: /u/"],
+  [1,11,"The swimming POOL was FULL of happy children.","pool, full","pool: /u/ · full: /ʊ/"],
+  [1,12,"I COULD WALK to school when I was younger.","could, walk","could: /ʊ/ · walk: /ɔ/"],
+  [1,13,"The CHILD lives in a big HOUSE near the river.","child, house","child: /aɪ/ · house: /aʊ/"],
+  [1,14,"The CROWD made a lot of NOISE after the game.","crowd, noise","crowd: /aʊ/ · noise: /ɔɪ/"],
+  [1,15,"The BOY wants to BUY a new bike for his birthday.","boy, buy","boy: /ɔɪ/ · buy: /aɪ/"],
+  [2,1,"What is the PRICE of the PRIZE for the winner?","price, prize","price: /s/ · prize: /z/"],
+  [2,2,"He THOUGHT about the lesson that the teacher TAUGHT.","thought, taught","thought: /θ/ · taught: /t/"],
+  [2,3,"THEY will come back to the city another DAY.","They, day","They: /ð/ · day: /d/"],
+  [2,4,"Only a FEW people could enjoy the VIEW from the hill.","few, view","few: /f/ · view: /v/"],
+  [2,5,"Please SHARE your CHAIR with the new student.","share, chair","share: /ʃ/ · chair: /tʃ/"],
+  [2,6,"Everybody CHEERED when the JUDGE read the result.","cheered, judge","cheered: /tʃ/ · judge: /dʒ/"],
+  [2,7,"The MAJOR had a long meeting with the MAYOR.","major, mayor","major: /dʒ/ · mayor: /y/"],
+  [2,8,"It is a PLEASURE to work with such PLEASANT people.","pleasure, pleasant","pleasure: /ʒ/ · pleasant: /z/"],
+  [2,9,"She bought the BEST VEST in the whole store.","best, vest","best: /b/ · vest: /v/"],
+  [2,10,"WENDY BET ten dollars on the soccer game.","Wendy, bet","Wendy: /w/ · bet: /b/"],
+  [2,11,"The HALL is on the second FLOOR of the building.","hall, floor","hall: /h/ · floor: /f/"],
+  [2,12,"Turn RIGHT at the next traffic LIGHT, and then stop.","right, light","right: /r/ · light: /l/"],
+  [2,13,"The KING KNOWS the answer to every question.","king, knows","king: /ŋ/ · knows: /n/"],
+  [2,14,"SOME people like to sit in the SUN all afternoon.","Some, sun","Some: /m/ · sun: /n/"],
+  [2,15,"I THINK this old boat is going to SINK.","think, sink","think: /θ/ · sink: /s/"],
+  [3,1,"He WALKED home from work and CALLED his mother.","walked, called","walked: -ed = /t/ · called: -ed = /d/"],
+  [3,2,"We FINISHED the test early and VISITED the museum.","finished, visited","finished: -ed = /t/ · visited: -ed = /ɪd/"],
+  [3,3,"They RETURNED to the hotel and DECIDED to rest.","returned, decided","returned: -ed = /d/ · decided: -ed = /ɪd/"],
+  [3,4,"Mark THINKS that his two DOGS are hungry again.","thinks, dogs","thinks: -s = /s/ · dogs: -s = /z/"],
+  [3,5,"She TAKES three CLASSES on Monday and Friday.","takes, classes","takes: -s = /s/ · classes: -s = /ɪz/"],
+  [3,6,"He LOVES the chicken SANDWICHES at school.","loves, sandwiches","loves: -s = /z/ · sandwiches: -s = /ɪz/"],
+  [3,7,"Kate HELPED the teacher check the RESULTS of the test.","helped, results","helped: -ed = /t/ · results: -s = /s/"],
+  [3,8,"The children LAUGHED at the funny ANIMALS at the zoo.","laughed, animals","laughed: -ed = /t/ · animals: -s = /z/"],
+  [3,9,"The whole family WATCHED the DANCES at the festival.","watched, dances","watched: -ed = /t/ · dances: -s = /ɪz/"],
+  [3,10,"We PLANNED a long trip across three STATES last year.","planned, states","planned: -ed = /d/ · states: -s = /s/"],
+  [3,11,"She OPENED a box of warm winter GLOVES for her son.","opened, gloves","opened: -ed = /d/ · gloves: -s = /z/"],
+  [3,12,"He ENJOYED the EXERCISES in class.","enjoyed, exercises","enjoyed: -ed = /d/ · exercises: -s = /ɪz/"],
+  [3,13,"My little sister WANTED some of the CHOCOLATES.","wanted, chocolates","wanted: -ed = /ɪd/ · chocolates: -s = /s/"],
+  [3,14,"The tired boys WAITED a long time for their RIDES.","waited, rides","waited: -ed = /ɪd/ · rides: -s = /z/"],
+  [3,15,"We NEEDED two big SUITCASES for the trip.","needed, suitcases","needed: -ed = /ɪd/ · suitcases: -s = /ɪz/"],
+  [4,1,"DID YOU see the new movie at the theater LAST NIGHT?","Did you, last night","Did you: palatalization: /d/ + /y/ → /dʒ/ · last night: deletion of /t/ between words"],
+  [4,2,"I’m GOING TO STAY UP late to finish my homework.","going to, stay up","going to: reduction: going to → gonna · stay up: linking with a /y/ glide"],
+  [4,3,"GIVE ME a big piece of that CHOCOLATE cake, please.","Give me, chocolate","Give me: assimilation: give me → gimme · chocolate: syncope (choc’late)"],
+  [4,4,"We HAVE TO GO AWAY for a week in December.","have to, go away","have to: regressive assimilation: have to → hafta · go away: linking with a /w/ glide"],
+  [4,5,"IS YOUR older brother TWENTY years old?","Is your, twenty","Is your: palatalization: /z/ + /y/ → /ʒ/ · twenty: deletion of /t/ after /n/"],
+  [4,6,"I’LL buy LOTS OF flowers for my grandmother.","I’ll, lots of","I’ll: contraction · lots of: deletion of /v/ in “of”"],
+  [4,7,"The little kids KEEP OUT of the FOOTBALL field.","keep out, football","keep out: consonant + vowel linking · football: unreleased stop before a stop"],
+  [4,8,"The GOOD BOY HAD TO wait outside the classroom.","good boy, had to","good boy: regressive assimilation: /d/ → /b/ · had to: progressive assimilation: had to → hatta"],
+  [4,9,"I know WHAT YOU WANT TO say to the teacher.","what you, want to","what you: palatalization: /t/ + /y/ → /tʃ/ · want to: reduction: want to → wanna"],
+  [4,10,"HIS SHIRT has a BIG GAP in the back.","His shirt, big gap","His shirt: assimilation: /z/ + /ʃ/ → /ʃ/ · big gap: gemination (one long /g/)"],
+  [4,11,"We USED TO go skiing in the mountains every FEBRUARY.","used to, February","used to: regressive assimilation: used to → usta · February: disappearing /r/ (Feb’uary)"],
+  [4,12,"The WATER in the lake is KIND OF cold today.","water, kind of","water: flap /t/ · kind of: reduction: kind of → kinda"],
+  [4,13,"You CAN GO to the party if you ASK HER first.","can go, ask her","can go: regressive assimilation: /n/ → /ŋ/ · ask her: deletion of /h/"],
+  [4,14,"I’ve GOT TO thank them all for their KINDNESS.","got to, kindness","got to: reduction: got to → gotta · kindness: deletion of /d/ in a cluster of three (kin’ness)"],
+  [4,15,"You CAN BUY a ticket, but FIND OUT the price first.","can buy, find out","can buy: regressive assimilation: /n/ → /m/ · find out: resyllabification (fin-dout)"],
+  [5,1,"The new EMPLOYEE has a UNIQUE idea.","employee, unique","employee: stressed suffix -ee · unique: stressed suffix -ique"],
+  [5,2,"Our VOLUNTEER speaks JAPANESE at home.","volunteer, Japanese","volunteer: stressed suffix -eer · Japanese: stressed suffix -ese"],
+  [5,3,"The band will ENTERTAIN us at a PICTURESQUE hotel.","entertain, picturesque","entertain: stressed suffix -ain (verbs) · picturesque: stressed suffix -esque"],
+  [5,4,"Smoking a CIGARETTE is a bad DECISION.","cigarette, decision","cigarette: stressed suffix -ette · decision: stress before -ion"],
+  [5,5,"PHYSICAL exercise is a FANTASTIC way to relax.","Physical, fantastic","Physical: stress before -ical · fantastic: stress before -ic"],
+  [5,6,"The OFFICIAL PUBLICITY starts today.","official, publicity","official: stress before -ial · publicity: stress before -ity"],
+  [5,7,"The CANADIAN restaurant serves DELICIOUS food.","Canadian, delicious","Canadian: stress before -ian · delicious: stress before -ious"],
+  [5,8,"Please CLASSIFY these SENSITIVE files.","classify, sensitive","classify: stress before -ify · sensitive: stress before -itive"],
+  [5,9,"Her ATTITUDE toward BIOLOGY changed this year.","attitude, biology","attitude: stress before -itude · biology: stress before -logy"],
+  [5,10,"GEOGRAPHY helps us APPRECIATE other cultures.","Geography, appreciate","Geography: stress before -graphy · appreciate: -ate: two syllables before the suffix"],
+  [5,11,"The SECRETARY made a small MISTAKE in the letter.","secretary, mistake","secretary: -ary: two syllables before the suffix · mistake: noun stressed on the root (exception)"],
+  [5,12,"Please APOLOGIZE to your MOTHER for being late.","apologize, mother","apologize: -ize: two syllables before the suffix · mother: two-syllable noun: first syllable"],
+  [5,13,"The NEWSPAPER says that prices will INCREASE again.","newspaper, increase","newspaper: compound noun: first word · increase: noun–verb pair: verb on the root"],
+  [5,14,"Please PICK UP the BEAUTIFUL flowers.","pick up, beautiful","pick up: two-word verb: last word · beautiful: suffix -ful does not move the stress"],
+  [5,15,"We INTRODUCE OURSELVES on the first day.","introduce, ourselves","introduce: first syllable of the root · ourselves: reflexive pronoun: last syllable"],
+];
 
-function onOpen() {
-  SpreadsheetApp.getUi().createMenu(APP).addItem('Configurar (setup)', 'setup').addToUi();
-}
-
-function doGet() {
-  const name = SpreadsheetApp.getActiveSpreadsheet().getName();
-  return json_({ ok: true, app: APP, sheet: name, version: VERSION });
-}
-
-function doPost(e) {
-  try {
-    const data = JSON.parse((e && e.postData && e.postData.contents) || '{}');
-    if (data.type === 'start') return json_(withLock_(function () { return start_(data); }));
-    if (data.type === 'recording') return json_(recording_(data));
-    if (data.type === 'finish') return json_(withLock_(function () { return finish_(data); }));
-    throw new Error('Pedido desconocido: ' + String(data.type));
-  } catch (err) {
-    return json_({ ok: false, error: err.message });
-  }
-}
-
-/* ── fin de la parte 3 de 7 ── */
+/* ── fin de la parte 3 de 8 ── */

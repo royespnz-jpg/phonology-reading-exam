@@ -13,3 +13,7 @@ export const RETIRED_URLS = [
 // readings). It keeps students out of them during the exam; it is not a
 // password: anyone who reads the page's code can find it.
 export const TEACHER_CODE = '1234';
+
+// The version of google-apps-script/Code.gs this page needs (its doGet says
+// which one is deployed). 2: five readings.
+export const SCRIPT_VERSION = 2;

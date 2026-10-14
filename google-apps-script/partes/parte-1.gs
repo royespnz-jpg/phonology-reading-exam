@@ -1,4 +1,4 @@
-/* ── Phonology Exam · parte 1 de 7 ── */
+/* ── Phonology Exam · parte 1 de 8 ── */
 
 /*
  * ── Phonology Reading Exam · Google Apps Script ──
@@ -19,10 +19,10 @@
  */
 
 const APP = 'Phonology Reading Exam';
-const VERSION = 1;
+const VERSION = 2;
 const ROOT_FOLDER = 'Phonology Reading Exam — Recordings';
-const QUESTIONS = ['r1', 'r2', 'r3'];
-const LABELS = { r1: 'Reading 1', r2: 'Reading 2', r3: 'Reading 3' };
+const QUESTIONS = ['r1', 'r2', 'r3', 'r4', 'r5'];
+const LABELS = { r1: 'Reading 1', r2: 'Reading 2', r3: 'Reading 3', r4: 'Reading 4', r5: 'Reading 5' };
 const MAX_AUDIO_BYTES = 20 * 1024 * 1024;
 
 const SHEETS = {
@@ -42,7 +42,10 @@ const SHEETS = {
   },
   rubric: {
     name: 'Rubric',
-    headers: ['Score', 'Reading 1 · Vowels and consonants', 'Reading 2 · Connected speech', 'Reading 3 · Word stress'],
+    headers: [
+      'Score', 'Reading 1 · Vowels', 'Reading 2 · Consonants', 'Reading 3 · -ed and -s endings',
+      'Reading 4 · Connected speech', 'Reading 5 · Word stress',
+    ],
   },
   readings: {
     name: 'Readings',
@@ -52,4 +55,4 @@ const SHEETS = {
 const EX = { status: 4, answers: 5, finished: 6, left: 7, restarts: 8, total: 9, folder: 10, attempt: 11 };
 const RE = { label: 4, recording: 7, score: 8, attempt: 10 };
 
-/* ── fin de la parte 1 de 7 ── */
+/* ── fin de la parte 1 de 8 ── */
