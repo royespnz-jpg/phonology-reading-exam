@@ -1,0 +1,15 @@
+{
+  "name": "phonology-reading-exam",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A timed reading-aloud exam for phonology (vowels and consonants, connected speech, word stress), with automatic recording and the teacher's Google Apps Script.",
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs",
+    "test": "node --test",
+    "gs": "node scripts/readings-gs.mjs && node scripts/split-gs.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

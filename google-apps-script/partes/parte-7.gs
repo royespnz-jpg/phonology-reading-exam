@@ -1,0 +1,46 @@
+/* ── Phonology Exam · parte 7 de 7 ── */
+
+function rootFolder_() {
+  const it = DriveApp.getFoldersByName(ROOT_FOLDER);
+  return it.hasNext() ? it.next() : DriveApp.createFolder(ROOT_FOLDER);
+}
+
+function childFolder_(parent, name) {
+  const it = parent.getFoldersByName(name);
+  return it.hasNext() ? it.next() : parent.createFolder(name);
+}
+
+/* Phonology Reading Exam — Recordings / <group> / <student> · <attempt> */
+function studentFolder_(who) {
+  const group = childFolder_(rootFolder_(), who.group || 'No group');
+  const name = who.student.replace(/[\\/:*?"<>|]/g, '-');
+  return childFolder_(group, name + ' · ' + who.attempt.slice(-6));
+}
+
+function withLock_(fn) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    return fn();
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* Text that looks like a formula is kept as text. */
+function text_(s) {
+  s = String(s || '');
+  return /^[=+\-@]/.test(s) ? "'" + s : s;
+}
+
+function date_(iso) {
+  const d = new Date(iso);
+  return isNaN(d) ? new Date() : d;
+}
+
+function json_(obj) {
+  return ContentService.createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ── fin de la parte 7 de 7 ── */
