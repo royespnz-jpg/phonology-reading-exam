@@ -53,7 +53,8 @@ Las consignas se oyen (voz del navegador) y se leen en pantalla. Son unos 8 minu
 2. **Implementar → Nueva implementación → Aplicación web** · Ejecutar como: **Yo** · Quién tiene acceso: **Cualquier
    persona** → copiá la URL que termina en `/exec`.
 3. **En el examen**, abrí la página **Teacher** (`…/#teacher`): pegá la URL, *Test*, *Save*. Ahí está el link para los
-   estudiantes y un link para probar el examen.
+   estudiantes y un link para probar el examen. La página ya trae tu URL de fábrica ([`js/config.js`](js/config.js)): si
+   cambiás de planilla, cambiala ahí o usá el link de la página Teacher.
 
 ### Qué guarda la planilla
 
