@@ -1,62 +1,35 @@
-/* ── Phonology Exam · parte 6 de 8 ── */
+/* ── Phonology Exam · parte 6 de 10 ── */
 
-function recording_(d) {
-  const who = person_(d);
-  if (QUESTIONS.indexOf(d.qid) < 0) throw new Error('Lectura desconocida.');
-  const mime = String(d.mime || '').split(';')[0];
-  if (mime.indexOf('audio/') !== 0) throw new Error('Eso no es un audio.');
-  if (!d.audio) throw new Error('No llegó el audio.');
-  const bytes = Utilities.base64Decode(d.audio);
-  if (bytes.length > MAX_AUDIO_BYTES) throw new Error('La grabación es demasiado grande.');
-
-  /* The same reading sent again (the first one did arrive) gets the same file back. */
-  const sheet = sheet_('responses');
-  const existing = findResponse_(sheet, who.attempt, d.qid);
-  if (existing) return { ok: true, duplicate: true, url: existing };
-
-  const ext = /mp4|m4a|aac/.test(d.mime) ? 'm4a' : /ogg/.test(d.mime) ? 'ogg' : 'webm';
-  const label = LABELS[d.qid];
-  const blob = Utilities.newBlob(bytes, mime, label + '.' + ext);
-  const file = studentFolder_(who).createFile(blob);
-  file.setDescription(String(d.prompt || '').slice(0, 1000));
-  const url = file.getUrl();
-
-  withLock_(function () {
-    if (findResponse_(sheet, who.attempt, d.qid)) return;
-    sheet.appendRow([
-      date_(d.recordedAt),
-      text_(who.student),
-      text_(who.group),
-      label,
-      text_(String(d.prompt || '').slice(0, 2000)),
-      Math.round(Number(d.durationSec) || 0),
-      '',
-      '',
-      '',
-      who.attempt,
-    ]);
-    sheet.getRange(sheet.getLastRow(), RE.recording).setFormula('=HYPERLINK("' + url + '","▶ Listen")');
-    const exams = sheet_('exams');
-    const row = findRow_(exams, EX.attempt, who.attempt);
-    if (row) exams.getRange(row, EX.answers).setValue(countResponses_(sheet, who.attempt));
-  });
-  return { ok: true, url: url, id: file.getId() };
+function setup() {
+  Object.keys(SHEETS).forEach(function (k) { sheet_(k); });
+  reference_('rubric', rubric_());
+  reference_('readings', readingRows_());
+  rootFolder_();
+  const msg = 'Listo: hojas Exams, Responses, Rubric y Readings, y la carpeta «' + ROOT_FOLDER +
+    '» en tu Drive. Ahora implementá la aplicación web.';
+  Logger.log(msg);
+  return msg;
 }
 
-function finish_(d) {
-  const who = person_(d);
-  const sheet = sheet_('exams');
-  let row = findRow_(sheet, EX.attempt, who.attempt);
-  if (!row) {
-    start_(d);
-    row = sheet.getLastRow();
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu(APP).addItem('Configurar (setup)', 'setup').addToUi();
+}
+
+function doGet() {
+  const name = SpreadsheetApp.getActiveSpreadsheet().getName();
+  return json_({ ok: true, app: APP, sheet: name, version: VERSION });
+}
+
+function doPost(e) {
+  try {
+    const data = JSON.parse((e && e.postData && e.postData.contents) || '{}');
+    if (data.type === 'start') return json_(withLock_(function () { return start_(data); }));
+    if (data.type === 'recording') return json_(recording_(data));
+    if (data.type === 'finish') return json_(withLock_(function () { return finish_(data); }));
+    throw new Error('Pedido desconocido: ' + String(data.type));
+  } catch (err) {
+    return json_({ ok: false, error: err.message });
   }
-  sheet.getRange(row, EX.status).setValue('finished');
-  sheet.getRange(row, EX.answers).setValue(countResponses_(sheet_('responses'), who.attempt));
-  sheet.getRange(row, EX.finished).setValue(date_(d.finishedAt));
-  sheet.getRange(row, EX.left).setValue(Number(d.leftPage) || 0);
-  sheet.getRange(row, EX.restarts).setValue(Number(d.resumed) || 0);
-  return { ok: true };
 }
 
-/* ── fin de la parte 6 de 8 ── */
+/* ── fin de la parte 6 de 10 ── */

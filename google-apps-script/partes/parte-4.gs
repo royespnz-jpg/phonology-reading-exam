@@ -1,35 +1,66 @@
-/* ── Phonology Exam · parte 4 de 8 ── */
+/* ── Phonology Exam · parte 4 de 10 ── */
 
-function setup() {
-  Object.keys(SHEETS).forEach(function (k) { sheet_(k); });
-  reference_('rubric', RUBRIC);
-  reference_('readings', READINGS_ROWS);
-  rootFolder_();
-  const msg = 'Listo: hojas Exams, Responses, Rubric y Readings, y la carpeta «' + ROOT_FOLDER +
-    '» en tu Drive. Ahora implementá la aplicación web.';
-  Logger.log(msg);
-  return msg;
-}
+const READINGS_ROWS_2 = [
+  [5,1,"I will MISS YOU when you leave the CITY next month.","miss you, city","miss you: palatalization: /s/ + /y/ → /ʃ/ · city: flap /t/"],
+  [5,2,"COULD YOU park the BLACK CAR over there, please?","Could you, black car","Could you: palatalization: /d/ + /y/ → /dʒ/ · black car: gemination (one long consonant)"],
+  [5,3,"I BET YOU know the answer to the question EXACTLY.","bet you, exactly","bet you: palatalization: /t/ + /y/ → /tʃ/ · exactly: deletion of /t/ or /d/ in a cluster of three"],
+  [5,4,"WAS YOUR dinner at the hotel AS GOOD AS mine?","Was your, as good as","Was your: palatalization: /z/ + /y/ → /ʒ/ · as good as: weak form of a function word"],
+  [5,5,"Please SAY IT again slowly for the new STUDENT.","say it, student","say it: linking with a /y/ glide · student: syllabic consonant"],
+  [5,6,"GO OUT and meet the young PRINCE at the gate.","Go out, prince","Go out: linking with a /w/ glide · prince: epenthesis: an added /t/ or /p/"],
+  [5,7,"TURN OFF the lights and TELL THEM to go to sleep.","Turn off, tell them","Turn off: consonant + vowel linking · tell them: deletion of /ð/ in them"],
+  [5,8,"The plan WORKED OUT well, so you OUGHT TO try it.","worked out, ought to","worked out: resyllabification · ought to: reduction: ought to → oughta"],
+  [5,9,"WHAT DO YOU usually write in that little NOTEBOOK?","What do you, notebook","What do you: reduction: what do you → whaddaya · notebook: unreleased stop"],
+  [5,10,"IT’S too late to talk to the manager IN PERSON.","It’s, in person","It’s: progressive assimilation · in person: regressive assimilation: /n/ → /m/"],
+  [5,11,"SHE’LL take a taxi home IN CASE it rains.","She’ll, in case","She’ll: contraction (blend) · in case: regressive assimilation: /n/ → /ŋ/"],
+  [5,12,"That RED CAR is always parked on the EAST SIDE.","red car, East side","red car: regressive assimilation: /d/, /t/ → /b/, /g/, /p/, /k/ · East side: deletion of /t/ or /d/ between words"],
+  [5,13,"THESE SHOES cost PLENTY of money at the mall.","These shoes, plenty","These shoes: regressive assimilation: /s/, /z/ + /ʃ/ → /ʃ/ · plenty: deletion of /t/ after /n/"],
+  [5,14,"There’s a CUP OF coffee next to the fresh VEGETABLES.","cup of, vegetables","cup of: deletion of /v/ in “of” · vegetables: syncope (a lost unstressed vowel)"],
+  [5,15,"HELP HIM carry the bags, because it’s GOING TO RAIN.","Help him, going to rain","Help him: deletion of /h/ in he, him, her, his · going to rain: reduction: going to → gonna"],
+  [6,1,"WOULD YOU really WANT TO GO to the beach alone?","Would you, want to go","Would you: palatalization: /d/ + /y/ → /dʒ/ · want to go: reduction: want to → wanna"],
+  [6,2,"I’ll MEET YOU at six, but now I’ve GOT TO GO.","meet you, got to go","meet you: palatalization: /t/ + /y/ → /tʃ/ · got to go: reduction: got to → gotta"],
+  [6,3,"My sister HAS TO study very hard THIS YEAR.","has to, this year","has to: reduction: have to, has to → hafta, hasta · this year: palatalization: /s/ + /y/ → /ʃ/"],
+  [6,4,"Grandpa USED TO FISH in the river with MY UNCLE.","used to fish, my uncle","used to fish: reduction: used to → usta · my uncle: linking with a /y/ glide"],
+  [6,5,"I’m KIND OF TIRED, and I have NO IDEA why.","kind of tired, no idea","kind of tired: reduction: kind of → kinda · no idea: linking with a /w/ glide"],
+  [6,6,"LET ME drive you home after the birthday PARTY.","Let me, party","Let me: assimilation: give me → gimme, let me → lemme · party: flap /t/"],
+  [6,7,"COME IN and say hello to the GOVERNOR.","Come in, governor","Come in: consonant + vowel linking · governor: disappearing /r/"],
+  [6,8,"Give the BAD DOG a little COMFORT after the storm.","bad dog, comfort","bad dog: gemination (one long consonant) · comfort: epenthesis: an added /t/ or /p/"],
+  [6,9,"Buy a HOT DOG and a BOTTLE OF water for the trip.","hot dog, bottle of","hot dog: unreleased stop · bottle of: deletion of /v/ in “of”"],
+  [6,10,"THAT’S a warm WINTER coat for the mountains.","That’s, winter","That’s: progressive assimilation · winter: deletion of /t/ after /n/"],
+  [6,11,"TEN BOYS told us that THEY’D come to the game.","Ten boys, they’d","Ten boys: regressive assimilation: /n/ → /m/ · they’d: contraction (blend)"],
+  [6,12,"My BEST FRIEND has lived IN KANSAS since May.","best friend, in Kansas","best friend: deletion of /t/ or /d/ between words · in Kansas: regressive assimilation: /n/ → /ŋ/"],
+  [6,13,"THIS SHOP sells shirts in many DIFFERENT colors.","This shop, different","This shop: regressive assimilation: /s/, /z/ + /ʃ/ → /ʃ/ · different: syncope (a lost unstressed vowel)"],
+  [6,14,"TELL HER to LOOK AT THE clock on the wall.","Tell her, look at the","Tell her: deletion of /h/ in he, him, her, his · look at the: weak form of a function word"],
+  [6,15,"The POSTMAN COULDN’T find our new house.","postman, couldn’t","postman: deletion of /t/ or /d/ in a cluster of three · couldn’t: syllabic consonant"],
+  [7,1,"The new EMPLOYEE has a UNIQUE idea.","employee, unique","employee: stressed suffix -ee · unique: stressed suffix -ique"],
+  [7,2,"Our VOLUNTEER speaks JAPANESE at home.","volunteer, Japanese","volunteer: stressed suffix -eer · Japanese: stressed suffix -ese"],
+  [7,3,"The band will ENTERTAIN us at a PICTURESQUE hotel.","entertain, picturesque","entertain: stressed suffix -ain (verbs) · picturesque: stressed suffix -esque"],
+  [7,4,"Smoking a CIGARETTE is a bad DECISION.","cigarette, decision","cigarette: stressed suffix -ette · decision: stress before -ion"],
+  [7,5,"PHYSICAL exercise is a FANTASTIC way to relax.","Physical, fantastic","Physical: stress before -ical · fantastic: stress before -ic"],
+  [7,6,"The OFFICIAL PUBLICITY starts today.","official, publicity","official: stress before -ial · publicity: stress before -ity"],
+  [7,7,"The CANADIAN restaurant serves DELICIOUS food.","Canadian, delicious","Canadian: stress before -ian · delicious: stress before -ious"],
+  [7,8,"Please CLASSIFY these SENSITIVE files.","classify, sensitive","classify: stress before -ify · sensitive: stress before -itive"],
+  [7,9,"Her ATTITUDE toward BIOLOGY changed this year.","attitude, biology","attitude: stress before -itude · biology: stress before -logy"],
+  [7,10,"GEOGRAPHY helps us APPRECIATE other cultures.","Geography, appreciate","Geography: stress before -graphy · appreciate: -ate verb: two syllables before the suffix"],
+  [7,11,"The SECRETARY made a small MISTAKE in the letter.","secretary, mistake","secretary: -ary: two syllables before the suffix · mistake: noun stressed on the root (exception)"],
+  [7,12,"Please APOLOGIZE to your MOTHER for being late.","apologize, mother","apologize: -ize: two syllables before the suffix · mother: two-syllable noun: first syllable"],
+  [7,13,"The NEWSPAPER says that prices will INCREASE again.","newspaper, increase","newspaper: compound noun: first word · increase: noun–verb pair: verb on the root"],
+  [7,14,"Please PICK UP the BEAUTIFUL flowers.","pick up, beautiful","pick up: two-word verb: last word · beautiful: neutral suffix (-ful, -al, -ment…): the stress does not move"],
+  [7,15,"We INTRODUCE OURSELVES on the first day.","introduce, ourselves","introduce: first syllable of the root · ourselves: reflexive pronoun: last syllable"],
+  [8,1,"Every INDIVIDUAL TRAINEE gets a desk.","individual, trainee","individual: stress before -ual · trainee: stressed suffix -ee"],
+  [8,2,"Our ENGINEER is very EFFICIENT at work.","engineer, efficient","engineer: stressed suffix -eer · efficient: stress before -cient"],
+  [8,3,"The ANTIQUE clock makes a CONTINUOUS sound.","antique, continuous","antique: stressed suffix -ique · continuous: stress before -uous"],
+  [8,4,"CHINESE silk is soft and very DELICATE.","Chinese, delicate","Chinese: stressed suffix -ese · delicate: -ate adjective or noun: two syllables before the suffix"],
+  [8,5,"Please REMOVE that old CASSETTE from the car.","remove, cassette","remove: two-syllable verb with a prefix: on the root · cassette: stressed suffix -ette"],
+  [8,6,"This DEFINITION in the dictionary is not COMPLETE.","definition, complete","definition: stress before -ion · complete: two-syllable adjective with a prefix: on the root"],
+  [8,7,"The ENERGETIC children FINISH their work early.","energetic, finish","energetic: stress before -ic · finish: two-syllable verb or adjective without a prefix: first syllable"],
+  [8,8,"The HUMIDITY in the GARAGE is very high.","humidity, garage","humidity: stress before -ity · garage: borrowed word: last syllable"],
+  [8,9,"The FINANCIAL report this month was EXCELLENT.","financial, excellent","financial: stress before -ial · excellent: long noun or adjective: first syllable"],
+  [8,10,"The VEGETARIAN market sells fresh PRODUCE.","vegetarian, produce","vegetarian: stress before -ian · produce: noun–verb pair: noun on the first syllable"],
+  [8,11,"Please don’t INTERFERE; it’s a MYSTERIOUS case.","interfere, mysterious","interfere: verb with inter-, over-, under-: on the root · mysterious: stress before -ious"],
+  [8,12,"ZOOLOGY is my FAVORITE subject at school.","Zoology, favorite","Zoology: stress before -logy · favorite: a syllable disappears after the stress"],
+  [8,13,"Many writers EXAGGERATE in an AUTOBIOGRAPHY.","exaggerate, autobiography","exaggerate: -ate verb: two syllables before the suffix · autobiography: stress before -graphy"],
+  [8,14,"Let’s ORGANIZE the shelves in the DRUGSTORE.","organize, drugstore","organize: -ize: two syllables before the suffix · drugstore: compound noun: first word"],
+  [8,15,"Don’t DROP OUT of school; believe in YOURSELF.","drop out, yourself","drop out: two-word verb: last word · yourself: reflexive pronoun: last syllable"],
+];
 
-function onOpen() {
-  SpreadsheetApp.getUi().createMenu(APP).addItem('Configurar (setup)', 'setup').addToUi();
-}
-
-function doGet() {
-  const name = SpreadsheetApp.getActiveSpreadsheet().getName();
-  return json_({ ok: true, app: APP, sheet: name, version: VERSION });
-}
-
-function doPost(e) {
-  try {
-    const data = JSON.parse((e && e.postData && e.postData.contents) || '{}');
-    if (data.type === 'start') return json_(withLock_(function () { return start_(data); }));
-    if (data.type === 'recording') return json_(recording_(data));
-    if (data.type === 'finish') return json_(withLock_(function () { return finish_(data); }));
-    throw new Error('Pedido desconocido: ' + String(data.type));
-  } catch (err) {
-    return json_({ ok: false, error: err.message });
-  }
-}
-
-/* ── fin de la parte 4 de 8 ── */
+/* ── fin de la parte 4 de 10 ── */

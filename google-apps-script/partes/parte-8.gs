@@ -1,46 +1,62 @@
-/* ── Phonology Exam · parte 8 de 8 ── */
+/* ── Phonology Exam · parte 8 de 10 ── */
 
-function rootFolder_() {
-  const it = DriveApp.getFoldersByName(ROOT_FOLDER);
-  return it.hasNext() ? it.next() : DriveApp.createFolder(ROOT_FOLDER);
+function recording_(d) {
+  const who = person_(d);
+  if (QUESTIONS.indexOf(d.qid) < 0) throw new Error('Lectura desconocida.');
+  const mime = String(d.mime || '').split(';')[0];
+  if (mime.indexOf('audio/') !== 0) throw new Error('Eso no es un audio.');
+  if (!d.audio) throw new Error('No llegó el audio.');
+  const bytes = Utilities.base64Decode(d.audio);
+  if (bytes.length > MAX_AUDIO_BYTES) throw new Error('La grabación es demasiado grande.');
+
+  /* The same reading sent again (the first one did arrive) gets the same file back. */
+  const sheet = sheet_('responses');
+  const existing = findResponse_(sheet, who.attempt, d.qid);
+  if (existing) return { ok: true, duplicate: true, url: existing };
+
+  const ext = /mp4|m4a|aac/.test(d.mime) ? 'm4a' : /ogg/.test(d.mime) ? 'ogg' : 'webm';
+  const label = LABELS[d.qid];
+  const blob = Utilities.newBlob(bytes, mime, label + '.' + ext);
+  const file = studentFolder_(who).createFile(blob);
+  file.setDescription(String(d.prompt || '').slice(0, 1000));
+  const url = file.getUrl();
+
+  withLock_(function () {
+    if (findResponse_(sheet, who.attempt, d.qid)) return;
+    sheet.appendRow([
+      date_(d.recordedAt),
+      text_(who.student),
+      text_(who.group),
+      label,
+      text_(String(d.prompt || '').slice(0, 2000)),
+      Math.round(Number(d.durationSec) || 0),
+      '',
+      '',
+      '',
+      who.attempt,
+    ]);
+    sheet.getRange(sheet.getLastRow(), RE.recording).setFormula('=HYPERLINK("' + url + '","▶ Listen")');
+    const exams = sheet_('exams');
+    const row = findRow_(exams, EX.attempt, who.attempt);
+    if (row) exams.getRange(row, EX.answers).setValue(countResponses_(sheet, who.attempt));
+  });
+  return { ok: true, url: url, id: file.getId() };
 }
 
-function childFolder_(parent, name) {
-  const it = parent.getFoldersByName(name);
-  return it.hasNext() ? it.next() : parent.createFolder(name);
-}
-
-/* Phonology Reading Exam — Recordings / <group> / <student> · <attempt> */
-function studentFolder_(who) {
-  const group = childFolder_(rootFolder_(), who.group || 'No group');
-  const name = who.student.replace(/[\\/:*?"<>|]/g, '-');
-  return childFolder_(group, name + ' · ' + who.attempt.slice(-6));
-}
-
-function withLock_(fn) {
-  const lock = LockService.getScriptLock();
-  lock.waitLock(30000);
-  try {
-    return fn();
-  } finally {
-    lock.releaseLock();
+function finish_(d) {
+  const who = person_(d);
+  const sheet = sheet_('exams');
+  let row = findRow_(sheet, EX.attempt, who.attempt);
+  if (!row) {
+    start_(d);
+    row = sheet.getLastRow();
   }
+  sheet.getRange(row, EX.status).setValue('finished');
+  sheet.getRange(row, EX.answers).setValue(countResponses_(sheet_('responses'), who.attempt));
+  sheet.getRange(row, EX.finished).setValue(date_(d.finishedAt));
+  sheet.getRange(row, EX.left).setValue(Number(d.leftPage) || 0);
+  sheet.getRange(row, EX.restarts).setValue(Number(d.resumed) || 0);
+  return { ok: true };
 }
 
-/* Text that looks like a formula is kept as text. */
-function text_(s) {
-  s = String(s || '');
-  return /^[=+\-@]/.test(s) ? "'" + s : s;
-}
-
-function date_(iso) {
-  const d = new Date(iso);
-  return isNaN(d) ? new Date() : d;
-}
-
-function json_(obj) {
-  return ContentService.createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-/* ── fin de la parte 8 de 8 ── */
+/* ── fin de la parte 8 de 10 ── */

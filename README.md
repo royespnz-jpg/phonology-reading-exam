@@ -6,15 +6,15 @@ grabación va a tu Google Drive y a una planilla donde ponés la nota.
 
 ## El examen
 
-Cinco lecturas, cada una con **60 segundos para preparar** y **60 segundos para leer**:
+Diez lecturas, cada una con **60 segundos para preparar** y **60 segundos para leer**:
 
-| Lectura | Qué evalúa | Fuente (solo estos PDFs) |
+| Lecturas | Qué evalúan | Fuente (solo estos PDFs) |
 | --- | --- | --- |
 | 1 · Vowels | Las 15 vocales | *Accurate English*, cap. 4 |
 | 2 · Consonants | Las consonantes | *Accurate English*, cap. 15 |
 | 3 · -ed and -s endings | /t/, /d/, /ɪd/ y /s/, /z/, /ɪz/ | *Accurate English*, cap. 14 |
-| 4 · Connected speech | Linking, asimilación, palatalización, deleción, reducciones | Celce-Murcia, cap. 5; Prator & Robinett, lección 16 |
-| 5 · Word stress | La sílaba acentuada de cada palabra | *Accurate English*, cap. 6 y 7 |
+| 4–6 · Connected speech 1–3 | 37 ajustes: linking, glides, asimilación, palatalización, deleción, síncopa, epéntesis, formas débiles, consonantes silábicas, reducciones | Celce-Murcia, cap. 5; Prator & Robinett, lección 16; *Accurate English* 15.11 |
+| 7–10 · Word stress 1–4 | 42 reglas: sufijos, pares sustantivo–verbo, *-ate*, compuestos, phrasal verbs, prefijos, palabras prestadas… | *Accurate English*, cap. 6 y 7 |
 
 - **Por oraciones.** Cada lectura es una lista numerada de **15 oraciones** sueltas, sin texto narrativo ni párrafos. Las
   oraciones son nuevas: no se copiaron de los libros, pero sus palabras y reglas salen solo de esos capítulos.
@@ -26,16 +26,19 @@ Cinco lecturas, cada una con **60 segundos para preparar** y **60 segundos para 
     dos veces.
   - *Consonants*: dos consonantes por oración (price/prize, thought/taught…); ninguna aparece más de dos veces.
   - *-ed / -s*: con seis pronunciaciones hay justo 15 pares posibles, y cada oración usa uno distinto.
-  - *Connected speech* y *Word stress*: 30 ajustes o reglas diferentes (dos por oración), sin repetir ninguno.
+  - *Connected speech* y *Word stress*: cada lectura evalúa 30 ajustes o reglas diferentes (dos por oración), sin
+    repetir ninguno; entre las tres de connected speech se cubren los 37 ajustes de la lista, y entre las cuatro de word
+    stress, las 42 reglas (`CS` y `ST` en [`js/format.js`](js/format.js)).
+- **Ninguna palabra target se repite en todo el examen** (300 targets, todos distintos).
 - **Cabe en un minuto.** Cada lectura tiene unas 170–185 sílabas: a ritmo parejo de estudiante (unas 3,5 sílabas por
-  segundo, con una pausa corta entre oraciones) lleva entre 55 y 58 segundos. Las pruebas automáticas controlan todo
+  segundo, con una pausa corta entre oraciones) lleva entre 55 y 59 segundos. Las pruebas automáticas controlan todo
   esto (dos targets, nada repetido, el minuto).
 - **Las oraciones aparecen** recién cuando empieza el tiempo de preparación (“Begin preparing now”), así todos tienen
   los mismos 60 segundos.
 - En la página **Teacher** y en la vista previa, cada oración muestra en letra chica qué evalúa cada target (por ejemplo
   *pen: /ɛ/ · pin: /ɪ/*); los estudiantes no lo ven. La hoja *Readings* de la planilla también lo tiene.
 
-Las consignas se oyen (voz del navegador) y se leen en pantalla. Son unos 13 minutos.
+Las consignas se oyen (voz del navegador) y se leen en pantalla. Son unos 25 minutos (20 de relojes).
 
 - **El micrófono**: se pide una vez, en la prueba de micrófono antes de empezar. Después graba solo en cada lectura y
   se cierra al terminar el tiempo.
