@@ -385,36 +385,34 @@ audio {
   font-size: 0.92rem;
 }
 .progress {
-  list-style: none;
-  display: flex;
-  gap: 6px;
-  margin: 0;
-  padding: 0;
-}
-.progress li {
   display: grid;
-  place-items: center;
-  min-width: 40px;
-  height: 32px;
-  padding: 0 8px;
-  border-radius: 999px;
-  border: 1px solid var(--line-2);
-  font: 600 0.85rem var(--f-mono);
+  justify-items: center;
+  gap: 6px;
+  pointer-events: none;
+  user-select: none;
+}
+.progress-label {
+  font: 600 0.78rem var(--f-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--muted);
-  transition:
-    background 0.3s,
-    color 0.3s,
-    border-color 0.3s;
 }
-.progress li.now {
-  border-color: var(--ink);
-  color: var(--ink);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 10%, transparent);
+.progress-bars {
+  display: flex;
+  gap: 4px;
 }
-.progress li.done {
+.progress-bars i {
+  width: 34px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--line-2);
+  transition: background 0.3s;
+}
+.progress-bars i.now {
+  background: var(--ink-2);
+}
+.progress-bars i.done {
   background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
 }
 .stage-main {
   display: grid;
@@ -459,18 +457,18 @@ audio {
   line-height: 1.75;
 }
 .reading.sentences {
-  /* Thirteen sentences fit on a laptop screen without scrolling: the text
+  /* Fifteen sentences fit on a laptop screen without scrolling: the text
      follows the height of the window as well as its width. */
   max-width: 76ch;
   margin: 0;
   padding-left: calc(clamp(18px, 3vw, 32px) + 1.6em);
   list-style: decimal;
-  font-size: clamp(1rem, min(1.6vw, 2.6vh), 1.35rem);
-  line-height: 1.55;
+  font-size: clamp(1rem, min(1.6vw, 2.5vh), 1.35rem);
+  line-height: 1.5;
 }
 .reading.sentences li {
   padding-left: 0.3em;
-  margin: 0.1em 0;
+  margin: 0;
 }
 .reading .rule {
   display: block;
@@ -794,9 +792,8 @@ details summary {
   .who {
     display: none;
   }
-  .progress li {
-    min-width: 32px;
-    height: 28px;
+  .progress-bars i {
+    width: 24px;
   }
   .uploads li {
     grid-template-columns: minmax(0, 1fr) auto;
