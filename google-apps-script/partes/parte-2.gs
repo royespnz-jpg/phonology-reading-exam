@@ -1,4 +1,4 @@
-/* ── Phonology Exam · parte 2 de 10 ── */
+/* ── Phonology Exam · parte 2 de 9 ── */
 
 /* Each reading has 15 sentences with two targets each: 30 targets. The
    rubric has a column per reading, from the descriptors of its kind. */
@@ -38,4 +38,4 @@ function rubric_() {
   });
 }
 
-/* ── fin de la parte 2 de 10 ── */
+/* ── fin de la parte 2 de 9 ── */

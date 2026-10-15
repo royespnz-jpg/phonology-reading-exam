@@ -1,4 +1,4 @@
-/* ── Phonology Exam · parte 3 de 10 ── */
+/* ── Phonology Exam · parte 3 de 9 ── */
 
 /* readings:start */
 /* The readings, as the page shows them (the words in CAPITALS are the targets),
@@ -66,4 +66,4 @@ const READINGS_ROWS_1 = [
   [4,15,"You CAN BUY a ticket, but FIND OUT the price first.","can buy, find out","can buy: regressive assimilation: /n/ → /m/ · find out: resyllabification"],
 ];
 
-/* ── fin de la parte 3 de 10 ── */
+/* ── fin de la parte 3 de 9 ── */

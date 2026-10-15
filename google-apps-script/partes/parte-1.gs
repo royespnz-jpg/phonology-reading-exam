@@ -1,4 +1,4 @@
-/* ── Phonology Exam · parte 1 de 10 ── */
+/* ── Phonology Exam · parte 1 de 9 ── */
 
 /*
  * ── Phonology Reading Exam · Google Apps Script ──
@@ -19,20 +19,15 @@
  */
 
 const APP = 'Phonology Reading Exam';
-const VERSION = 3;
+const VERSION = 4;
 const ROOT_FOLDER = 'Phonology Reading Exam — Recordings';
 /* The readings: id, title and kind. Made from js/format.js: npm run gs. */
 const READINGS_META = [
   ["r1","Vowels","vowels"],
   ["r2","Consonants","consonants"],
   ["r3","-ed and -s endings","endings"],
-  ["r4","Connected speech 1","connected"],
-  ["r5","Connected speech 2","connected"],
-  ["r6","Connected speech 3","connected"],
-  ["r7","Word stress 1","stress"],
-  ["r8","Word stress 2","stress"],
-  ["r9","Word stress 3","stress"],
-  ["r10","Word stress 4","stress"],
+  ["r4","Connected speech","connected"],
+  ["r5","Word stress","stress"],
 ];
 const QUESTIONS = READINGS_META.map(function (r) { return r[0]; });
 const LABELS = {};
@@ -66,4 +61,4 @@ const SHEETS = {
 const EX = { status: 4, answers: 5, finished: 6, left: 7, restarts: 8, total: 9, folder: 10, attempt: 11 };
 const RE = { label: 4, recording: 7, score: 8, attempt: 10 };
 
-/* ── fin de la parte 1 de 10 ── */
+/* ── fin de la parte 1 de 9 ── */

@@ -1,35 +1,32 @@
-/* ── Phonology Exam · parte 6 de 10 ── */
+/* ── Phonology Exam · parte 6 de 9 ── */
 
-function setup() {
-  Object.keys(SHEETS).forEach(function (k) { sheet_(k); });
-  reference_('rubric', rubric_());
-  reference_('readings', readingRows_());
-  rootFolder_();
-  const msg = 'Listo: hojas Exams, Responses, Rubric y Readings, y la carpeta «' + ROOT_FOLDER +
-    '» en tu Drive. Ahora implementá la aplicación web.';
-  Logger.log(msg);
-  return msg;
+/* ─── requests ─── */
+
+function start_(d) {
+  const who = person_(d);
+  const sheet = sheet_('exams');
+  const row = findRow_(sheet, EX.attempt, who.attempt);
+  if (row) return { ok: true, duplicate: true };
+  const folder = studentFolder_(who);
+  sheet.appendRow([
+    date_(d.startedAt),
+    text_(who.student),
+    text_(who.group),
+    d.demo ? 'demo' : 'started',
+    0,
+    '',
+    '',
+    '',
+    '',
+    folder.getUrl(),
+    who.attempt,
+  ]);
+  const last = sheet.getLastRow();
+  sheet.getRange(last, EX.total).setFormula(
+    '=IF(COUNTIFS(Responses!J:J,K' + last + ',Responses!H:H,"<>")=0,"",' +
+      'SUMIFS(Responses!H:H,Responses!J:J,K' + last + '))'
+  );
+  return { ok: true };
 }
 
-function onOpen() {
-  SpreadsheetApp.getUi().createMenu(APP).addItem('Configurar (setup)', 'setup').addToUi();
-}
-
-function doGet() {
-  const name = SpreadsheetApp.getActiveSpreadsheet().getName();
-  return json_({ ok: true, app: APP, sheet: name, version: VERSION });
-}
-
-function doPost(e) {
-  try {
-    const data = JSON.parse((e && e.postData && e.postData.contents) || '{}');
-    if (data.type === 'start') return json_(withLock_(function () { return start_(data); }));
-    if (data.type === 'recording') return json_(recording_(data));
-    if (data.type === 'finish') return json_(withLock_(function () { return finish_(data); }));
-    throw new Error('Pedido desconocido: ' + String(data.type));
-  } catch (err) {
-    return json_({ ok: false, error: err.message });
-  }
-}
-
-/* ── fin de la parte 6 de 10 ── */
+/* ── fin de la parte 6 de 9 ── */
