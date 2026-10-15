@@ -15,6 +15,8 @@ export const RETIRED_URLS = [
 // password: anyone who reads the page's code can find it.
 export const TEACHER_CODE = '1234';
 
-// The version of google-apps-script/Code.gs this page needs (its doGet says
-// which one is deployed). 2: five readings; 3: ten readings.
+// The oldest google-apps-script/Code.gs this page works with (its doGet says
+// which one is deployed). From version 3 the script takes the readings r1–r10,
+// so the five readings of version 4 also work with a version 3 deployment;
+// version 4 only updates the Readings and Rubric tabs.
 export const SCRIPT_VERSION = 3;

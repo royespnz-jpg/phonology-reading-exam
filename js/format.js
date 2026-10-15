@@ -1,16 +1,16 @@
-// The exam: ten readings aloud — vowels, consonants, the -ed and -s endings,
-// three of connected speech and four of word stress — each with 60 seconds to
-// prepare and 60 seconds to read. Each reading has 15 separate sentences, and
-// each sentence has exactly two targets in **bold**; `tests` says what each one
-// tests, in the same order (the teacher sees it; students don't). Within a
-// reading no pair of targets is used twice: every vowel is tested twice and
-// every consonant at most twice; the 15 sentences of the endings reading are
-// the 15 pairs of /t/, /d/, /ɪd/, /s/, /z/, /ɪz/; and each connected speech
-// and word stress reading tests 30 different adjustments or rules (CS, ST).
-// No target word is used twice in the whole exam. Each reading has about
-// 170–185 syllables: under a minute at a steady learner's pace (≈ 3.5
-// syllables a second with a short pause between sentences). The sentences are
-// new; their words and rules come only from the chapters below.
+// The exam: five readings aloud — vowels, consonants, the -ed and -s endings,
+// connected speech and word stress — each with 60 seconds to prepare and 60
+// seconds to read. Each reading has 15 separate sentences, and each sentence
+// has exactly two targets in **bold**; `tests` says what each one tests, in the
+// same order (the teacher sees it; students don't). Within a reading no pair
+// of targets is used twice: every vowel is tested twice and every consonant at
+// most twice; the 15 sentences of the endings reading are the 15 pairs of /t/,
+// /d/, /ɪd/, /s/, /z/, /ɪz/; and the connected speech and word stress readings
+// each test 30 different adjustments or rules (from CS and ST). No target
+// word is used twice in the whole exam. Each reading has about 170–185
+// syllables: under a minute at a steady learner's pace (≈ 3.5 syllables a
+// second with a short pause between sentences). The sentences are new; their
+// words and rules come only from the chapters below.
 //
 // Sources: Dauer, Accurate English — Ch. 4 Vowels in Detail, Ch. 14 <ed> and
 // <s> Endings, Ch. 15 Consonants in Detail, Ch. 6–7 Stress; Celce-Murcia et
@@ -23,8 +23,8 @@ export const RESPONSE = 60;
 
 // The adjustments of connected speech (Celce-Murcia Ch. 5; Prator & Robinett
 // L16; Accurate English 15.11) and the stress rules (Accurate English Ch. 6–7)
-// the targets test. Each connected speech and word stress reading uses 30 of
-// them, none twice.
+// the targets can test. The connected speech and word stress readings each use
+// 30 of them, none twice.
 export const CS = {
   pal_dy: 'palatalization: /d/ + /y/ → /dʒ/',
   pal_ty: 'palatalization: /t/ + /y/ → /tʃ/',
@@ -188,7 +188,7 @@ export const READINGS = [
     id: 'r4',
     n: 4,
     kind: 'connected',
-    title: 'Connected speech 1',
+    title: 'Connected speech',
     focus: 'how the words join and change together',
     sentences: [
       { text: '**Did you** see the new movie at the theater **last night**?', tests: [CS.pal_dy, CS.del_wb] },
@@ -211,56 +211,8 @@ export const READINGS = [
   {
     id: 'r5',
     n: 5,
-    kind: 'connected',
-    title: 'Connected speech 2',
-    focus: 'how the words join and change together',
-    sentences: [
-      { text: 'I will **miss you** when you leave the **city** next month.', tests: [CS.pal_sy, CS.flap] },
-      { text: '**Could you** park the **black car** over there, please?', tests: [CS.pal_dy, CS.gem] },
-      { text: 'I **bet you** know the answer to the question **exactly**.', tests: [CS.pal_ty, CS.del_3] },
-      { text: '**Was your** dinner at the hotel **as good as** mine?', tests: [CS.pal_zy, CS.weak] },
-      { text: 'Please **say it** again slowly for the new **student**.', tests: [CS.glide_y, CS.syll] },
-      { text: '**Go out** and meet the young **prince** at the gate.', tests: [CS.glide_w, CS.epen] },
-      { text: '**Turn off** the lights and **tell them** to go to sleep.', tests: [CS.cv, CS.del_th] },
-      { text: 'The plan **worked out** well, so you **ought to** try it.', tests: [CS.resyl, CS.oughta] },
-      { text: '**What do you** usually write in that little **notebook**?', tests: [CS.dodid, CS.unrel] },
-      { text: '**It’s** too late to talk to the manager **in person**.', tests: [CS.prog, CS.n_m] },
-      { text: '**She’ll** take a taxi home **in case** it rains.', tests: [CS.contr, CS.n_ng] },
-      { text: 'That **red car** is always parked on the **East side**.', tests: [CS.place, CS.del_wb] },
-      { text: '**These shoes** cost **plenty** of money at the mall.', tests: [CS.sib, CS.del_nt] },
-      { text: 'There’s a **cup of** coffee next to the fresh **vegetables**.', tests: [CS.del_v, CS.syncope] },
-      { text: '**Help him** carry the bags, because it’s **going to rain**.', tests: [CS.del_h, CS.gonna] },
-    ],
-  },
-  {
-    id: 'r6',
-    n: 6,
-    kind: 'connected',
-    title: 'Connected speech 3',
-    focus: 'how the words join and change together',
-    sentences: [
-      { text: '**Would you** really **want to go** to the beach alone?', tests: [CS.pal_dy, CS.wanna] },
-      { text: 'I’ll **meet you** at six, but now I’ve **got to go**.', tests: [CS.pal_ty, CS.gotta] },
-      { text: 'My sister **has to** study very hard **this year**.', tests: [CS.hafta, CS.pal_sy] },
-      { text: 'Grandpa **used to fish** in the river with **my uncle**.', tests: [CS.usta, CS.glide_y] },
-      { text: 'I’m **kind of tired**, and I have **no idea** why.', tests: [CS.kinda, CS.glide_w] },
-      { text: '**Let me** drive you home after the birthday **party**.', tests: [CS.manner, CS.flap] },
-      { text: '**Come in** and say hello to the **governor**.', tests: [CS.cv, CS.del_r] },
-      { text: 'Give the **bad dog** a little **comfort** after the storm.', tests: [CS.gem, CS.epen] },
-      { text: 'Buy a **hot dog** and a **bottle of** water for the trip.', tests: [CS.unrel, CS.del_v] },
-      { text: '**That’s** a warm **winter** coat for the mountains.', tests: [CS.prog, CS.del_nt] },
-      { text: '**Ten boys** told us that **they’d** come to the game.', tests: [CS.n_m, CS.contr] },
-      { text: 'My **best friend** has lived **in Kansas** since May.', tests: [CS.del_wb, CS.n_ng] },
-      { text: '**This shop** sells shirts in many **different** colors.', tests: [CS.sib, CS.syncope] },
-      { text: '**Tell her** to **look at the** clock on the wall.', tests: [CS.del_h, CS.weak] },
-      { text: 'The **postman** **couldn’t** find our new house.', tests: [CS.del_3, CS.syll] },
-    ],
-  },
-  {
-    id: 'r7',
-    n: 7,
     kind: 'stress',
-    title: 'Word stress 1',
+    title: 'Word stress',
     focus: 'the stressed syllable of each word',
     sentences: [
       { text: 'The new **employee** has a **unique** idea.', tests: [ST.ee, ST.ique] },
@@ -280,82 +232,10 @@ export const READINGS = [
       { text: 'We **introduce** **ourselves** on the first day.', tests: [ST.root1, ST.reflexive] },
     ],
   },
-  {
-    id: 'r8',
-    n: 8,
-    kind: 'stress',
-    title: 'Word stress 2',
-    focus: 'the stressed syllable of each word',
-    sentences: [
-      { text: 'Every **individual** **trainee** gets a desk.', tests: [ST.ual, ST.ee] },
-      { text: 'Our **engineer** is very **efficient** at work.', tests: [ST.eer, ST.cient] },
-      { text: 'The **antique** clock makes a **continuous** sound.', tests: [ST.ique, ST.uous] },
-      { text: '**Chinese** silk is soft and very **delicate**.', tests: [ST.ese, ST.ate_a] },
-      { text: 'Please **remove** that old **cassette** from the car.', tests: [ST.v2, ST.ette] },
-      { text: 'This **definition** in the dictionary is not **complete**.', tests: [ST.ion, ST.a2] },
-      { text: 'The **energetic** children **finish** their work early.', tests: [ST.ic, ST.first2] },
-      { text: 'The **humidity** in the **garage** is very high.', tests: [ST.ity, ST.foreign] },
-      { text: 'The **financial** report this month was **excellent**.', tests: [ST.ial, ST.long1] },
-      { text: 'The **vegetarian** market sells fresh **produce**.', tests: [ST.ian, ST.nv_n] },
-      { text: 'Please don’t **interfere**; it’s a **mysterious** case.', tests: [ST.inter, ST.ious] },
-      { text: '**Zoology** is my **favorite** subject at school.', tests: [ST.logy, ST.disappear] },
-      { text: 'Many writers **exaggerate** in an **autobiography**.', tests: [ST.ate_v, ST.graphy] },
-      { text: 'Let’s **organize** the shelves in the **drugstore**.', tests: [ST.ize, ST.compound] },
-      { text: 'Don’t **drop out** of school; believe in **yourself**.', tests: [ST.twoword, ST.reflexive] },
-    ],
-  },
-  {
-    id: 'r9',
-    n: 9,
-    kind: 'stress',
-    title: 'Word stress 3',
-    focus: 'the stressed syllable of each word',
-    sentences: [
-      { text: 'The **refugee** showed great **gratitude** to the family.', tests: [ST.ee, ST.itude] },
-      { text: 'The **mountaineer** packed all the **necessary** tools.', tests: [ST.eer, ST.ary] },
-      { text: 'She loves **classical** **Portuguese** music.', tests: [ST.ical, ST.ese] },
-      { text: 'Can you **identify** the owner of the **boutique**?', tests: [ST.ify, ST.ique] },
-      { text: 'We saw a **silhouette** during the **demonstration**.', tests: [ST.ette, ST.ion] },
-      { text: 'We must **maintain** a **realistic** budget this year.', tests: [ST.ain, ST.ic] },
-      { text: 'The **distance** to the **grotesque** old castle is short.', tests: [ST.n2, ST.esque] },
-      { text: 'The **electrician** checked the **electricity** in the house.', tests: [ST.ian, ST.ity] },
-      { text: 'Our **competitive** team got **substantial** support.', tests: [ST.itive, ST.ial] },
-      { text: '**Technology** makes young children **curious**.', tests: [ST.logy, ST.ious] },
-      { text: 'We **congratulate** her on her **photography**.', tests: [ST.ate_v, ST.graphy] },
-      { text: 'It is **unfortunate** that they **criticize** him so much.', tests: [ST.ate_a, ST.ize] },
-      { text: 'We must **protect** this **remote** island.', tests: [ST.v2, ST.a2] },
-      { text: 'The **sudden** **success** of the song surprised everyone.', tests: [ST.first2, ST.noun_root] },
-      { text: 'The old **typewriter** was **difficult** to use.', tests: [ST.compound, ST.long1] },
-    ],
-  },
-  {
-    id: 'r10',
-    n: 10,
-    kind: 'stress',
-    title: 'Word stress 4',
-    focus: 'the stressed syllable of each word',
-    sentences: [
-      { text: 'The **referee** checked every **visual** signal.', tests: [ST.ee, ST.ual] },
-      { text: 'His **career** had an **ambiguous** start.', tests: [ST.eer, ST.uous] },
-      { text: 'The **Vietnamese** cook is very **proficient**.', tests: [ST.ese, ST.cient] },
-      { text: 'Her **critique** of the new **brochure** was fair.', tests: [ST.ique, ST.foreign] },
-      { text: 'Please **put away** the **microphone** after class.', tests: [ST.twoword, ST.long1] },
-      { text: 'The guard will **detain** the thief **himself**.', tests: [ST.ain, ST.reflexive] },
-      { text: 'We need to **develop** a better **location** for the store.', tests: [ST.root1, ST.ion] },
-      { text: '**Professional** players use **elastic** bands.', tests: [ST.neutral, ST.ic] },
-      { text: 'The **conflict** between the two groups became **critical**.', tests: [ST.nv_n, ST.ical] },
-      { text: 'We **suspect** there is no **necessity** for a new law.', tests: [ST.nv_v, ST.ity] },
-      { text: 'Don’t **underestimate** the **editorial** team.', tests: [ST.inter, ST.ial] },
-      { text: 'The **historian** sat in a **comfortable** chair.', tests: [ST.ian, ST.disappear] },
-      { text: 'Don’t **terrify** the **superstitious** children.', tests: [ST.ify, ST.ious] },
-      { text: '**Archeology** can be a **repetitive** job.', tests: [ST.logy, ST.itive] },
-      { text: 'You don’t need to **memorize** the whole **bibliography**.', tests: [ST.ize, ST.graphy] },
-    ],
-  },
 ];
 
 export const INTRO =
-  'This is the phonology reading test. It has ten readings: vowels, consonants, the endings of the past tense and the plural, three readings of connected speech, and four of word stress. ' +
+  'This is the phonology reading test. It has five readings: vowels, consonants, the endings of the past tense and the plural, connected speech, and word stress. ' +
   'For each reading you will have sixty seconds to prepare and sixty seconds to read the sentences aloud. ' +
   'The test runs by itself. Your microphone turns on when it is time to read and turns off when the time is up. You cannot pause or go back.';
 

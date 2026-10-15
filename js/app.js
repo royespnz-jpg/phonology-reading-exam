@@ -1,9 +1,9 @@
-import { READINGS, RESPONSES, INTRO, buildTimeline, timedSeconds, directions, ruleOf, PREP, RESPONSE } from './format.js?v=202610141811';
-import { clockHtml, runClock, idleClock, fmt } from './clock.js?v=202610141811';
-import { unlockAudio, beep, speak, stopSpeaking, openMicrophone, closeMicrophone, levelMeter, startRecording } from './audio.js?v=202610141811';
-import { scriptUrl, saveScriptUrl, isScriptUrl, ping, report, enqueue, onUpload, pendingUploads, resumeUploads } from './api.js?v=202610141811';
-import { saveRecording, allRecordings } from './store.js?v=202610141811';
-import { TEACHER_CODE, SCRIPT_VERSION } from './config.js?v=202610141811';
+import { READINGS, RESPONSES, INTRO, buildTimeline, timedSeconds, directions, ruleOf, PREP, RESPONSE } from './format.js?v=202610150110';
+import { clockHtml, runClock, idleClock, fmt } from './clock.js?v=202610150110';
+import { unlockAudio, beep, speak, stopSpeaking, openMicrophone, closeMicrophone, levelMeter, startRecording } from './audio.js?v=202610150110';
+import { scriptUrl, saveScriptUrl, isScriptUrl, ping, report, enqueue, onUpload, pendingUploads, resumeUploads } from './api.js?v=202610150110';
+import { saveRecording, allRecordings } from './store.js?v=202610150110';
+import { TEACHER_CODE, SCRIPT_VERSION } from './config.js?v=202610150110';
 
 const app = document.getElementById('app');
 const params = new URLSearchParams(location.search);
@@ -57,7 +57,7 @@ function renderStart(error = '') {
     <section class="start-hero">
       <p class="eyebrow">Phonology Reading Exam${DEMO ? ' · <b>demo</b>' : ''}</p>
       <h1>Read when the clock says so.</h1>
-      <p class="lede">Ten readings, sentence by sentence. A clock counts down ${PREP} seconds to prepare; when it reaches zero
+      <p class="lede">Five readings, sentence by sentence. A clock counts down ${PREP} seconds to prepare; when it reaches zero
         you hear a beep, your microphone turns on, and it records for ${RESPONSE} seconds while you read aloud.
         Pay attention to the words in <b>bold</b>.</p>
       <p class="po-time">Each reading: ${PREP} s to prepare · ${RESPONSE} s to read.</p>

@@ -14,15 +14,12 @@ const uses = (r) => {
 };
 const repeated = (list) => list.filter((x, i) => list.indexOf(x) !== i);
 
-test('ten readings, each with 60 seconds to prepare and 60 to read', () => {
+test('five readings, each with 60 seconds to prepare and 60 to read', () => {
   const steps = buildTimeline();
   assert.equal(steps[0].type, 'intro');
-  assert.match(steps[0].say, /ten readings/);
-  assert.deepEqual(READINGS.map((r) => r.title), [
-    'Vowels', 'Consonants', '-ed and -s endings',
-    'Connected speech 1', 'Connected speech 2', 'Connected speech 3',
-    'Word stress 1', 'Word stress 2', 'Word stress 3', 'Word stress 4',
-  ]);
+  assert.match(steps[0].say, /five readings/);
+  assert.deepEqual(READINGS.map((r) => r.title), ['Vowels', 'Consonants', '-ed and -s endings', 'Connected speech', 'Word stress']);
+  assert.deepEqual(READINGS.map((r) => r.kind), ['vowels', 'consonants', 'endings', 'connected', 'stress']);
   assert.deepEqual(READINGS.map((r) => r.id), READINGS.map((r, i) => `r${i + 1}`));
   assert.deepEqual(
     steps.filter((s) => s.seconds).map((s) => `${s.type}:${s.reading}:${s.seconds}`),
@@ -30,11 +27,11 @@ test('ten readings, each with 60 seconds to prepare and 60 to read', () => {
   );
   assert.equal(PREP, 60);
   assert.equal(RESPONSE, 60);
-  assert.equal(timedSeconds(steps), 1200);
+  assert.equal(timedSeconds(steps), 600);
   assert.deepEqual(steps.filter((s) => s.type === 'response').map((s) => s.id), RESPONSES.map((r) => r.id));
   // Each reading: its directions, then "Begin preparing now", then "Begin reading aloud now".
   const r4 = steps.findIndex((s) => s.type === 'part' && s.reading === 'r4');
-  assert.match(steps[r4].say, /^Reading 4\. Connected speech 1\. .*60 seconds to prepare.*60 seconds to read/);
+  assert.match(steps[r4].say, /^Reading 4\. Connected speech\. .*60 seconds to prepare.*60 seconds to read/);
   assert.equal(steps[r4 + 1].say, 'Begin preparing now.');
   assert.equal(steps[r4 + 2].say, 'Begin reading aloud now.');
   // The voice says the endings reading's name in words.
@@ -44,8 +41,8 @@ test('ten readings, each with 60 seconds to prepare and 60 to read', () => {
 });
 
 test('the quick demo shortens every clock but keeps at least 3 seconds', () => {
-  assert.deepEqual(buildTimeline({ scale: 0.1 }).filter((s) => s.seconds).map((s) => s.seconds), Array(20).fill(6));
-  assert.deepEqual(buildTimeline({ scale: 0.01 }).filter((s) => s.seconds).map((s) => s.seconds), Array(20).fill(3));
+  assert.deepEqual(buildTimeline({ scale: 0.1 }).filter((s) => s.seconds).map((s) => s.seconds), Array(10).fill(6));
+  assert.deepEqual(buildTimeline({ scale: 0.01 }).filter((s) => s.seconds).map((s) => s.seconds), Array(10).fill(3));
 });
 
 test('15 separate sentences per reading, each with exactly two targets in bold', () => {
@@ -79,19 +76,15 @@ test('nothing repeats within a reading', () => {
   assert.deepEqual(Object.keys(uses(byId('r3'))).sort(), [...six].sort());
   const all = six.flatMap((a, i) => six.slice(i + 1).map((b) => [a, b].sort().join(' + ')));
   assert.deepEqual([...pairs(byId('r3'))].sort(), all.sort());
-  // Connected speech and word stress: 30 different adjustments / rules in each
-  // reading, all from the lists, and together the readings use every one.
+  // Connected speech and word stress: 30 different adjustments / rules, all
+  // from the lists.
   for (const [kind, list] of [['connected', CS], ['stress', ST]]) {
     const labels = Object.values(list);
     for (const r of ofKind(kind)) {
       assert.equal(Object.keys(uses(r)).length, 30, r.id);
       for (const t of Object.keys(uses(r))) assert.ok(labels.includes(t), `${r.id}: ${t} is not in the list`);
     }
-    const used = new Set(ofKind(kind).flatMap((r) => Object.keys(uses(r))));
-    assert.deepEqual(labels.filter((l) => !used.has(l)), [], `${kind}: never tested`);
   }
-  assert.equal(ofKind('connected').length, 3);
-  assert.equal(ofKind('stress').length, 4);
 });
 
 test('no target word is used twice in the whole exam', () => {
